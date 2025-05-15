@@ -5,7 +5,7 @@
 body {
   margin: 0;
   font-family: 'Pretendard', sans-serif;
-  background-color:#FFA500;;
+  background-color:#f8d28c;;
   color: white;
 }
 
@@ -59,7 +59,7 @@ nav a {
   padding: 120px 10%;
   display: flex;
   align-items: center;
-  background-color: #d15730;
+  background-color: #f8d28c;
 }
 
 .main-text {
@@ -96,7 +96,7 @@ nav a {
 .features {
   height: 100vh;
   padding: 80px 60px;
-  background-color: #d15730;
+  background-color: #f8d28c;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -128,7 +128,7 @@ nav a {
 }
 
 .card h3 {
-  color: #ff8352;
+  color: #f8d28c;
   margin-bottom: 16px;
   font-size: 32px;
   margin-top: 50px;
@@ -155,7 +155,7 @@ nav a {
 
 .song-section {
   height: 100vh;
-  background-color: #d15730;
+  background-color: #f8d28c;
   padding: 80px 80px;
   color: white;
 }
@@ -211,7 +211,7 @@ nav a {
 
 .control-button {
   background-color: #fce6cf;
-  color: #d15730;
+  color:#f8d28c;
   font-weight: bold;
   padding: 20px 40px;
   border-radius: 20px;
