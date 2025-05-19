@@ -107,6 +107,8 @@ body {
     background-color: #ff910a;
 }
 
+/*header*/
+
 header {
     background-color: #1a1a1a;
     display: flex;
@@ -149,3 +151,35 @@ header {
     padding: 8px 16px;
     border-radius: 20px;
   }
+  
+  .signup:hover {
+    background-color: #c63c63;
+  }
+  
+  .nav-btn {
+    padding: 10px 20px;
+    background-color: transparent;
+    border: 2px solid white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    color:white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  
+  }
+  
+  .nav-btn:hover {
+    padding: 10px 20px;
+    background-color: #f8d28c;
+    border: 2px solid black;
+    padding: 8px 16px;
+    border-radius: 20px;
+    color:black;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  
+  }
+  
+  
