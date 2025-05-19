@@ -5,7 +5,7 @@
 body {
   margin: 0;
   font-family: 'Pretendard', sans-serif;
-  background-color:#f8d28c;;
+  background-color:#f8d28c;
   color: white;
 }
 
@@ -29,7 +29,7 @@ header {
 }
 
 .logo span {
-  color:#FFA500;;
+  color:#FFA500;
 }
 
 nav ul {
