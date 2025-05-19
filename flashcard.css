@@ -70,8 +70,8 @@ body {
 }
 
 .prev-btn, .next-btn {
-    background-color: #fce6cf;
-    color: #003049;
+    background-color: #1a1a1a;
+    color: white;
     border: none;
     padding: 15px 30px;
     font-size: 18px;
@@ -80,10 +80,12 @@ body {
 }
 
 .prev-btn:hover {
-    background-color: #FFD60A;
+    background-color: #fce6cf;
+    color: black;
 }
 .next-btn:hover {
-    background-color: #FFD60A;
+    background-color: #fce6cf;
+    color:black;
 }
 
 .quiz-btn-group {
@@ -92,8 +94,8 @@ body {
 
 .quiz-btn {
     display: inline-block;
-    background-color: #fce6cf;
-    color: #003049;
+    background-color: #6f6a60;
+    color: white;
     padding: 15px 70px;
     font-size: 18px;
     border-radius: 10px;
@@ -102,7 +104,7 @@ body {
 }
 
 .quiz-btn:hover {
-    background-color: #FFD60A;
+    background-color: #ff910a;
 }
 
 header {
