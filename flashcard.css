@@ -120,11 +120,13 @@ header {
     width: 100%;
     z-index: 1000;
   }
+
   
   .logo {
     font-weight: bold;
     font-size: 34px;
     color: white;
+    text-decoration:none;
   }
   
   .logo span {
