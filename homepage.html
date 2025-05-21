@@ -33,6 +33,20 @@
             </div>
           </div>
         </li>
+        
+        {% if current_user.is_authenticated %}
+          <li>
+            <form action="{{ url_for('logout') }}">
+              <button type="submit" class="nav-btn">LOGOUT</button>
+            </form>
+          </li>
+        {% else %}
+          <li>
+            <form action="{{ url_for('login') }}">
+              <button type="submit" class="nav-btn">LOGIN</button>
+            </form>
+          </li>
+        {% endif %}
       </ul>
 
     </nav>
