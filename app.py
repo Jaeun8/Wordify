@@ -27,7 +27,7 @@ def load_user(user_id):
 @app.route('/')
 @login_required
 def home():
-    return render_template('homepage.html', user=current_user)
+    return render_template('Wordify_Login.html', user=current_user)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -37,7 +37,7 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password, password):
             login_user(user)
-            return redirect(url_for('home'))
+            return redirect('homepage.html')
         else:
             return "Invalid username or password"
     return render_template('Wordify_Login.html')
@@ -67,7 +67,7 @@ def signup():
         db.session.add(new_user)
         db.session.commit()
 
-        return redirect(url_for('login'))
+        return redirect('Wordify_Login.html')
     
     return render_template('Wordify_Signup.html')
 
@@ -75,7 +75,7 @@ def signup():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('login'))
+    return redirect('homepage.html')
 
 if __name__ == '__main__':
     with app.app_context():
