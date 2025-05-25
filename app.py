@@ -37,7 +37,7 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password, password):
             login_user(user)
-            return redirect('homepage.html')
+            return redirect(url_for('home'))
         else:
             return "Invalid username or password"
     return render_template('Wordify_Login.html')
@@ -52,11 +52,11 @@ def signup():
         confirm_password = request.form.get('confirm-password')
 
         if password != confirm_password:
-            return "Passwords do not match"
+            return render_template('Wordify_Signup.html', error="Passwords do not match")
         
         existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
         if existing_user:
-            return "Username or email already exists"
+            return render_template('Wordify_Signup.html', error="Username or email already exists")
         
         new_user = User(
             name=name,
@@ -67,7 +67,7 @@ def signup():
         db.session.add(new_user)
         db.session.commit()
 
-        return redirect('Wordify_Login.html')
+        return redirect(url_for('login'))
     
     return render_template('Wordify_Signup.html')
 
