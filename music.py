@@ -26,6 +26,28 @@ def get_lyrics_ovh(artist, title):
     else:
         return None
 
+def get_track_with_lyrics(sp):
+    pop_artists = [
+        'Taylor Swift', 'Ed Sheeran', 'Ariana Grande', 'Bruno Mars', 'Billie Eilish',
+        'Dua Lipa', 'The Weeknd', 'Justin Bieber', 'Katy Perry', 'Shawn Mendes',
+        'Maroon 5', 'Halsey', 'Selena Gomez', 'Post Malone', 'Lady Gaga',
+        'Beyoncé', 'Rihanna', 'Sam Smith', 'Charlie Puth'
+    ]
+    while True:
+        artist = random.choice(pop_artists)
+        results = sp.search(q=f'artist:"{artist}"', type='track', limit=10)
+        tracks = results['tracks']['items']
+
+        if not tracks:
+            continue  # 트랙 없으면 다시 시도
+
+        random_track = random.choice(tracks)
+        lyrics = get_lyrics_ovh(random_track['artists'][0]['name'], random_track['name'])
+
+        if lyrics:  # 가사 있으면 리턴
+            return random_track, lyrics
+        # 가사 없으면 다시 시도
+
 @app.route('/')
 def login():
     auth_url = sp_oauth.get_authorize_url()
@@ -40,37 +62,22 @@ def callback():
     return redirect(url_for('home'))
 
 @app.route('/home')
-
 def home():
     token_info = session.get('token_info', None)
     if not token_info:
         return redirect(url_for('login'))
 
     sp = spotipy.Spotify(auth=token_info['access_token'])
-
-    pop_artists = ['Taylor Swift', 'Ed Sheeran', 'Ariana Grande', 'Bruno Mars', 'Billie Eilish', 'Dua Lipa', 'The Weeknd']
-    artist = random.choice(pop_artists)
-    results = sp.search(q=f'artist:"{artist}"', type='track', limit=10)
-    tracks = results['tracks']['items']
-
-    if not tracks:
-        return "<h1>팝송 트랙이 없습니다.</h1>"
-
-    random_track = random.choice(tracks)
-
-    lyrics = get_lyrics_ovh(random_track['artists'][0]['name'], random_track['name'])
+    random_track, lyrics = get_track_with_lyrics(sp)
 
     track_info = {
-    'title': random_track['name'],
-    'artist': random_track['artists'][0]['name'],
-    'album_cover': random_track['album']['images'][0]['url'],
-    'spotify_url': random_track['external_urls']['spotify'],
-    'lyrics': lyrics or '가사를 찾을 수 없습니다.'  
+        'title': random_track['name'],
+        'artist': random_track['artists'][0]['name'],
+        'album_cover': random_track['album']['images'][0]['url'],
+        'spotify_url': random_track['external_urls']['spotify'],
+        'lyrics': lyrics
     }
-
-
     return render_template('homepage.html', track=track_info)
-
 
 @app.route('/next-track')
 def next_track():
@@ -79,30 +86,16 @@ def next_track():
         return jsonify({'error': 'No token'}), 401
 
     sp = spotipy.Spotify(auth=token_info['access_token'])
-
-    pop_artists = ['Taylor Swift', 'Ed Sheeran', 'Ariana Grande', 'Bruno Mars', 'Billie Eilish', 'Dua Lipa', 'The Weeknd']
-    artist = random.choice(pop_artists)
-    results = sp.search(q=f'artist:"{artist}"', type='track', limit=10)
-    tracks = results['tracks']['items']
-
-    if not tracks:
-        return jsonify({'error': '팝송 트랙이 없습니다.'}), 404
-
-    random_track = random.choice(tracks)
-
-    lyrics = get_lyrics_ovh(random_track['artists'][0]['name'], random_track['name'])
+    random_track, lyrics = get_track_with_lyrics(sp)
 
     track_info = {
-    'title': random_track['name'],
-    'artist': random_track['artists'][0]['name'],
-    'album_cover': random_track['album']['images'][0]['url'],
-    'spotify_url': random_track['external_urls']['spotify'],
-    'lyrics': lyrics or '가사를 찾을 수 없습니다.'
-}
-
-
+        'title': random_track['name'],
+        'artist': random_track['artists'][0]['name'],
+        'album_cover': random_track['album']['images'][0]['url'],
+        'spotify_url': random_track['external_urls']['spotify'],
+        'lyrics': lyrics
+    }
     return jsonify(track_info)
-
 
 @app.route('/select', methods=['POST'])
 def select_song():
