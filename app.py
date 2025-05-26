@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+import traceback
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key_here'
@@ -13,33 +14,47 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+# ------------------- User Model -------------------
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150))
-    email = db.Column(db.String(150), unique=True)
-    username = db.Column(db.String(150), unique=True)
-    password = db.Column(db.String(256))
+    name = db.Column(db.String(150), nullable=False)
+    email = db.Column(db.String(150), unique=True, nullable=False)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(256), nullable=False)
 
+# ------------------- User Loader -------------------
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# ------------------- Routes -------------------
 @app.route('/')
 @login_required
 def home():
-    return render_template('Wordify_Login.html', user=current_user)
+    dummy_track = {
+        "title": "예시 제목",
+        "artist": "예시 아티스트",
+        "lyrics": "예시 가사입니다.",
+        "album_cover": "https://via.placeholder.com/150",
+        "spotify_url": "#"
+    }
+    return render_template('homepage.html', user=current_user, track=dummy_track)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
+
+        if not username or not password:
+            return render_template('Wordify_Login.html', error="모든 필드를 입력해주세요.")
+
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password, password):
             login_user(user)
             return redirect(url_for('home'))
         else:
-            return "Invalid username or password"
+            return render_template('Wordify_Login.html', error="아이디 또는 비밀번호가 잘못되었습니다.")
     return render_template('Wordify_Login.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -51,32 +66,44 @@ def signup():
         password = request.form.get('password')
         confirm_password = request.form.get('confirm-password')
 
-        if password != confirm_password:
-            return render_template('Wordify_Signup.html', error="Passwords do not match")
-        
-        existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
-        if existing_user:
-            return render_template('Wordify_Signup.html', error="Username or email already exists")
-        
-        new_user = User(
-            name=name,
-            email=email,
-            username=username,
-            password=generate_password_hash(password, method='sha256')
-        )
-        db.session.add(new_user)
-        db.session.commit()
+        if not all([name, email, username, password, confirm_password]):
+            return render_template('Wordify_Signup.html', error="모든 필드를 입력해주세요.")
 
-        return redirect(url_for('login'))
-    
+        if password != confirm_password:
+            return render_template('Wordify_Signup.html', error="비밀번호가 일치하지 않습니다.")
+
+        existing_user = User.query.filter(
+            (User.username == username) | (User.email == email)
+        ).first()
+
+        if existing_user:
+            return render_template('Wordify_Signup.html', error="이미 존재하는 사용자입니다.")
+
+        try:
+            new_user = User(
+                name=name,
+                email=email,
+                username=username,
+                password=generate_password_hash(password, method='pbkdf2:sha256')
+            )
+
+            db.session.add(new_user)
+            db.session.commit()
+            return redirect(url_for('login'))
+
+        except Exception as e:
+            print(traceback.format_exc())  # Console log
+            return render_template('Wordify_Signup.html', error=f"회원가입 중 오류 발생: {str(e)}")
+
     return render_template('Wordify_Signup.html')
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
-    return redirect('homepage.html')
+    return redirect(url_for('login'))
 
+# ------------------- Main -------------------
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()

@@ -17,9 +17,15 @@
           </form>
         </li>
         <li>
-          <form action="Wordify_Login.html">
-            <button type="submit" class="nav-btn signup">LOGIN/SIGNUP</button>
-          </form>
+          {% if current_user.is_authenticated %}
+            <form action="/logout">
+              <button type="submit" class="nav-btn">Logout</button>
+            </form>
+          {% else %}
+            <form action="/login">
+              <button type="submit" class="nav-btn">Login/Signup</button>
+            </form>
+          {% endif %}
         </li>
         <li>
           <div class="dropdown">

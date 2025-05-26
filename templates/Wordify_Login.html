@@ -10,6 +10,10 @@
     <div class="container">
         <h1><span class="highlight">WORDIFY</span>에 오신걸 환영합니다.</h1>
         <form method="POST" action="/login">
+            {% if error %}
+                <p style="color: red;">{{ error }}</p>
+            {% endif %}
+            
             <div class="form-group">
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" required>
@@ -22,7 +26,7 @@
     <!-- ✅ 버튼들을 묶는 div -->
     <div class="button-group">
         <button type="submit">로그인하기</button>
-        <a href="Wordify_Signup.html" class="signup-btn">Signup</a>
+        <a href="/signup" class="signup-btn">Signup</a>
     </div>
 </form>
 
