@@ -1,9 +1,7 @@
-from flask import Flask, render_template, redirect, url_for, request, session
+from flask import Flask, render_template, redirect, url_for, request, session, jsonify
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import random
-import requests
-
 
 app = Flask(__name__)
 app.secret_key = 'ywefewfwesdf'  # 세션을 위해 필요함
@@ -36,13 +34,11 @@ def home():
     token_info = session.get('token_info', None)
     if not token_info:
         return redirect(url_for('login'))
-    
+
     sp = spotipy.Spotify(auth=token_info['access_token'])
 
     # 랜덤 알파벳으로 검색
-    import random
     query = random.choice('abcdefghijklmnopqrstuvwxyz')
-
     results = sp.search(q=query, type='track', limit=10)
     tracks = results['tracks']['items']
 
@@ -55,12 +51,40 @@ def home():
         'title': random_track['name'],
         'artist': random_track['artists'][0]['name'],
         'album_cover': random_track['album']['images'][0]['url'],
-        'spotify_url': random_track['external_urls']['spotify']
+        'spotify_url': random_track['external_urls']['spotify'],
+        'lyrics': '가사 API를 연결하세요 :)'  # 필요하면 여기에 가사 추가
     }
 
-    # ... (가사 API 호출 및 렌더링 코드 동일)
-
     return render_template('homepage.html', track=track_info)
+
+@app.route('/next-track')
+def next_track():
+    token_info = session.get('token_info', None)
+    if not token_info:
+        return jsonify({'error': 'No token'}), 401
+
+    sp = spotipy.Spotify(auth=token_info['access_token'])
+    query = random.choice('abcdefghijklmnopqrstuvwxyz')
+    results = sp.search(q=query, type='track', limit=10)
+    tracks = results['tracks']['items']
+    if not tracks:
+        return jsonify({'error': 'No track found'}), 404
+
+    random_track = random.choice(tracks)
+
+    track_info = {
+        'title': random_track['name'],
+        'artist': random_track['artists'][0]['name'],
+        'album_cover': random_track['album']['images'][0]['url'],
+        'spotify_url': random_track['external_urls']['spotify'],
+        'lyrics': '가사 API도 여기에 포함할 수 있어요'  # 실제 가사 있으면 여기에
+    }
+
+    return jsonify(track_info)
+
+@app.route('/select', methods=['POST'])
+def select_song():
+    return redirect('/flashcard.html')  # 원하는 페이지로 이동
 
 if __name__ == '__main__':
     app.run(port=8090, debug=True)

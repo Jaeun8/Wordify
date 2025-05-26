@@ -85,12 +85,40 @@
         {{ track.lyrics }}
       </div> 
     </div>
+
+    <!--노래 선택-->
     <div class="song-controls">
-      <button class="choose-button">선택하기</button>
-      <button class="next-button">다음 곡</button>
-    </div>
-  </section>
-  
+      <!-- 다음 곡 버튼 -->
+      <form action="/next" method="get">
+        <button class="next-button">다음 곡</button>
+      </form>
+    
+      <!-- 선택하기 버튼 -->
+      <form action="/next" method="get">
+        <button class="next-button">다음 곡</button>
+      </form>
+      
+      <script>
+        document.querySelector('.next-button').addEventListener('click', function (event) {
+          event.preventDefault();  // 폼 제출 막기
+      
+          fetch('/next-track')
+            .then(response => response.json())
+            .then(data => {
+              if (data.error) {
+                alert('노래를 불러올 수 없습니다!');
+                return;
+              }
+      
+              document.querySelector('.song-cover img').src = data.album_cover;
+              document.querySelector('.song-cover a').href = data.spotify_url;
+              document.querySelector('.song-title').textContent = data.title;
+              document.querySelector('.song-artist').textContent = '👤 ' + data.artist;
+              document.querySelector('.song-lyrics').textContent = data.lyrics || '가사를 불러올 수 없습니다.';
+            });
+        });
+      </script>
+      
 
 </body>
 </html>
