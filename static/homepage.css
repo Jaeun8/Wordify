@@ -403,3 +403,27 @@ nav a {
   color: #666;
 }
 
+
+
+.song-lyrics {
+  font-size: 20px;
+  line-height: 1.0;
+  color: #333;
+  font-family: 'Arial', sans-serif;
+  white-space: pre-line;     /* 줄바꿈 유지 */
+  margin-top: 0px;
+  border-radius: 40px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  align-items: flex-start !important;  /* flex 아이템 왼쪽 정렬 */
+  justify-content: flex-start !important;
+  display: block;  /* flex 아니도록 */
+  padding: 10px 15px 25px 25px; /* 좌우 15px 공백 유지 */
+  text-align: left;
+
+  height: 500px;             /* 박스 높이 지정 */
+  overflow-y: auto;          /* 세로 스크롤 자동 생성 */
+  overflow-x: hidden;        /* 가로 스크롤 숨김 */
+}
+
+
+
