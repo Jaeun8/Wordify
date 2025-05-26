@@ -365,3 +365,41 @@ nav a {
   max-height: 230px;
   object-fit: contain;
 }
+
+/*music player*/
+.song-cover {
+  background-color: #1a1a1a;
+  border-radius: 40px;
+  width: 500px;
+  height: 500px;
+  display: flex;
+  flex-direction: column;    /* 이걸 추가해서 세로 배치 */
+  align-items: center;       /* 가로 중앙 정렬 유지 */
+  justify-content: center;   /* 세로 중앙 정렬 유지 */
+  font-weight: bold;
+  padding: 20px;             /* 여유 공간 주기 */
+  box-sizing: border-box;    /* 패딩 포함 */
+  text-align: center;        /* 텍스트도 가운데 정렬 */
+}
+
+
+.song-cover img {
+  display: block;
+  margin: 0 auto;
+  width: 300px;
+  height: auto;
+  border-radius: 8px;
+}
+
+.song-title {
+  margin-top: 12px;
+  margin-bottom: 4px;
+  font-size: 1.8em;
+}
+
+.song-artist {
+  margin: 0;
+  font-size: 1.2em;
+  color: #666;
+}
+

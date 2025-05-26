@@ -74,11 +74,12 @@
       <!-- 앨범 커버 이미지 -->
       <div class="song-cover">
         <a href="{{ track.spotify_url }}" target="_blank">
-          <img src="{{ track.album_cover }}" alt="앨범 커버" style="max-width: 200px; border-radius: 8px;" />
+          <img src="{{ track.album_cover }}" alt="앨범 커버" />
         </a>
-        <h3>{{ track.title }}</h3>
-        <p>👤 {{ track.artist }}</p>
+        <h3 class="song-title">{{ track.title }}</h3>
+        <p class="song-artist">👤 {{ track.artist }}</p>
       </div>
+      
       <!-- 가사 출력 -->
       <div class="song-lyrics" style="white-space: pre-wrap; max-height: 300px; overflow-y: auto; background:#f7f7f7; padding:10px; border-radius:5px;">
         {{ track.lyrics }}
