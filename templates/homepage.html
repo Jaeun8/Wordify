@@ -71,14 +71,25 @@
   <section class="song-section">
     <h2>오늘의 노래</h2>
     <div class="song-content">
-      <div class="song-cover">노래 커버</div>
-      <div class="song-lyrics">노래 가사</div> 
+      <!-- 앨범 커버 이미지 -->
+      <div class="song-cover">
+        <a href="{{ track.spotify_url }}" target="_blank">
+          <img src="{{ track.album_cover }}" alt="앨범 커버" style="max-width: 200px; border-radius: 8px;" />
+        </a>
+        <h3>{{ track.title }}</h3>
+        <p>👤 {{ track.artist }}</p>
+      </div>
+      <!-- 가사 출력 -->
+      <div class="song-lyrics" style="white-space: pre-wrap; max-height: 300px; overflow-y: auto; background:#f7f7f7; padding:10px; border-radius:5px;">
+        {{ track.lyrics }}
+      </div> 
     </div>
     <div class="song-controls">
       <button class="choose-button">선택하기</button>
       <button class="next-button">다음 곡</button>
     </div>
-</section>
+  </section>
+  
 
 </body>
 </html>
