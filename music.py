@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, url_for, request, session, j
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import random
+import requests
 
 app = Flask(__name__)
 app.secret_key = 'ywefewfwesdf'  # 세션을 위해 필요함
@@ -15,6 +16,15 @@ sp_oauth = SpotifyOAuth(client_id=CLIENT_ID,
                         client_secret=CLIENT_SECRET,
                         redirect_uri=REDIRECT_URI,
                         scope=SCOPE)
+
+def get_lyrics_ovh(artist, title):
+    url = f"https://api.lyrics.ovh/v1/{artist}/{title}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        return data.get('lyrics', None)
+    else:
+        return None
 
 @app.route('/')
 def login():
@@ -46,13 +56,17 @@ def home():
         return "<h1>트랙이 없습니다.</h1>"
 
     random_track = random.choice(tracks)
+    artist = random_track['artists'][0]['name']
+    title = random_track['name']
+
+    lyrics = get_lyrics_ovh(artist, title)
 
     track_info = {
-        'title': random_track['name'],
-        'artist': random_track['artists'][0]['name'],
+        'title': title,
+        'artist': artist,
         'album_cover': random_track['album']['images'][0]['url'],
         'spotify_url': random_track['external_urls']['spotify'],
-        'lyrics': '가사 API를 연결하세요 :)'  # 필요하면 여기에 가사 추가
+        'lyrics': lyrics if lyrics else '가사를 찾을 수 없습니다.'
     }
 
     return render_template('homepage.html', track=track_info)
@@ -67,17 +81,22 @@ def next_track():
     query = random.choice('abcdefghijklmnopqrstuvwxyz')
     results = sp.search(q=query, type='track', limit=10)
     tracks = results['tracks']['items']
+
     if not tracks:
         return jsonify({'error': 'No track found'}), 404
 
     random_track = random.choice(tracks)
+    artist = random_track['artists'][0]['name']
+    title = random_track['name']
+
+    lyrics = get_lyrics_ovh(artist, title)
 
     track_info = {
-        'title': random_track['name'],
-        'artist': random_track['artists'][0]['name'],
+        'title': title,
+        'artist': artist,
         'album_cover': random_track['album']['images'][0]['url'],
         'spotify_url': random_track['external_urls']['spotify'],
-        'lyrics': '가사 API도 여기에 포함할 수 있어요'  # 실제 가사 있으면 여기에
+        'lyrics': lyrics if lyrics else '가사를 찾을 수 없습니다.'
     }
 
     return jsonify(track_info)

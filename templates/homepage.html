@@ -99,24 +99,24 @@
       </form>
       
       <script>
-        document.querySelector('.next-button').addEventListener('click', function (event) {
-          event.preventDefault();  // 폼 제출 막기
-      
-          fetch('/next-track')
-            .then(response => response.json())
-            .then(data => {
-              if (data.error) {
-                alert('노래를 불러올 수 없습니다!');
-                return;
-              }
-      
-              document.querySelector('.song-cover img').src = data.album_cover;
-              document.querySelector('.song-cover a').href = data.spotify_url;
-              document.querySelector('.song-title').textContent = data.title;
-              document.querySelector('.song-artist').textContent = '👤 ' + data.artist;
-              document.querySelector('.song-lyrics').textContent = data.lyrics || '가사를 불러올 수 없습니다.';
-            });
-        });
+      document.querySelector('.next-button').addEventListener('click', function (event) {
+        event.preventDefault();  // 폼 제출 막기
+    
+        fetch('/next-track')
+          .then(response => response.json())
+          .then(data => {
+            if (data.error) {
+              alert('노래를 불러올 수 없습니다!');
+              return;
+            }
+    
+            document.querySelector('.song-cover img').src = data.album_cover;
+            document.querySelector('.song-cover a').href = data.spotify_url;
+            document.querySelector('.song-title').textContent = data.title;
+            document.querySelector('.song-artist').textContent = '👤 ' + data.artist;
+            document.querySelector('.song-lyrics').textContent = data.lyrics || '가사를 불러올 수 없습니다.';
+          });
+      });
       </script>
       
 
