@@ -17,8 +17,8 @@
           </form>
         </li>
         <li>
-          {% if current_user.is_authenticated %}
-            <form action="/logout">
+          {% if current_user is defined and current_user.is_authenticated %}
+          <form action="/logout">
               <button type="submit" class="nav-btn">Logout</button>
             </form>
           {% else %}
