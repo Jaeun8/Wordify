@@ -101,6 +101,18 @@ def next_track():
 nlp = spacy.load("en_core_web_sm")  # spaCy 모델 로드, 사전에 설치 필요
 
 
+@app.route('/next-word')
+def next_word():
+    flashcards = session.get('flashcards', [])
+    index = session.get('flashcard_index', 0)
+
+    if index >= len(flashcards):
+        return jsonify({'done': True})
+
+    word_data = flashcards[index]
+    session['flashcard_index'] = index + 1
+    return jsonify({'word': word_data['word'], 'meaning': word_data['meaning']})
+
 @app.route('/select')
 def select_song():
     token_info = session.get('token_info', None)
@@ -110,14 +122,15 @@ def select_song():
     sp = spotipy.Spotify(auth=token_info['access_token'])
     random_track, lyrics = get_track_with_lyrics(sp)
 
-    # 단어 3개 + 뜻 추출
     flashcards = get_three_words_meanings(lyrics)
 
-    # flashcard.html에 단어들 전달하며 렌더링
+    # 세션에 저장 (초기 인덱스 0)
+    session['flashcards'] = flashcards
+    session['flashcard_index'] = 0
+
     return render_template('flashcard.html', flashcards=flashcards)
 
 
-KAKAO_REST_API_KEY = '5072674c22e6ce7d82242ec285c70484'
 
 def get_definition(word):
     url = f"https://api.dictionaryapi.dev/api/v2/entries/en/{word}"
