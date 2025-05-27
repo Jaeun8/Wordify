@@ -1,18 +1,16 @@
-from flask import Flask, request, jsonify
+from flask import Blueprint, request, jsonify, render_template
+from flask_login import login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
 from datetime import date
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///steaks.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = 'supersecretsteak'
-CORS(app)
+# This will be initialized in app.py and passed into the app
+db = SQLAlchemy()
 
-db = SQLAlchemy(app)
+# Create Blueprint
+streaks_bp = Blueprint('streaks_bp', __name__)
 
 # ---------------------------
-# Streak Model
+# Model
 # ---------------------------
 class Streak(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -20,25 +18,29 @@ class Streak(db.Model):
     date = db.Column(db.Date, default=date.today)
 
 # ---------------------------
-# API Routes
+# Routes
 # ---------------------------
-@app.route("/api/streaks/<username>", methods=["GET"])
+@streaks_bp.route('/streaks')
+@login_required
+def streaks_page():
+    return render_template('streaks.html', username=current_user.username)
+
+@streaks_bp.route("/api/streaks/<username>", methods=["GET"])
+@login_required
 def get_streaks(username):
-    """Return all streak dates for a specific user."""
     streaks = Streak.query.filter_by(username=username).all()
     return jsonify([s.date.isoformat() for s in streaks])
 
-@app.route("/api/streaks/add", methods=["POST"])
+@streaks_bp.route("/api/streaks/add", methods=["POST"])
+@login_required
 def add_streak():
-    """Add today's streak for the user, if not already present."""
     data = request.json
-    username = data.get("username")
+    username = data.get("username") or current_user.username
     today = date.today()
 
     if not username:
         return jsonify({"error": "Username required"}), 400
 
-    # Prevent duplicates
     existing = Streak.query.filter_by(username=username, date=today).first()
     if not existing:
         new_streak = Streak(username=username, date=today)
@@ -46,11 +48,3 @@ def add_streak():
         db.session.commit()
 
     return jsonify({"status": "success"})
-
-# ---------------------------
-# Run the app
-# ---------------------------
-if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True)
