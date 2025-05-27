@@ -4,6 +4,7 @@ from spotipy.oauth2 import SpotifyOAuth
 import random
 import requests
 
+
 app = Flask(__name__)
 app.secret_key = 'ywefewfwesdf'  # 세션을 위해 필요함
 
