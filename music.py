@@ -3,7 +3,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import random
 import requests
-
+import spacy
 
 app = Flask(__name__)
 app.secret_key = 'ywefewfwesdf'  # 세션을 위해 필요함
@@ -98,9 +98,56 @@ def next_track():
     }
     return jsonify(track_info)
 
-@app.route('/select', methods=['POST'])
+nlp = spacy.load("en_core_web_sm")  # spaCy 모델 로드, 사전에 설치 필요
+
+
+@app.route('/select')
 def select_song():
-    return redirect('/flashcard.html')  # 원하는 페이지로 이동
+    token_info = session.get('token_info', None)
+    if not token_info:
+        return redirect(url_for('login'))
+
+    sp = spotipy.Spotify(auth=token_info['access_token'])
+    random_track, lyrics = get_track_with_lyrics(sp)
+
+    # 단어 3개 + 뜻 추출
+    flashcards = get_three_words_meanings(lyrics)
+
+    # flashcard.html에 단어들 전달하며 렌더링
+    return render_template('flashcard.html', flashcards=flashcards)
+
+
+KAKAO_REST_API_KEY = '5072674c22e6ce7d82242ec285c70484'
+
+def get_definition(word):
+    url = f"https://api.dictionaryapi.dev/api/v2/entries/en/{word}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        try:
+            return data[0]['meanings'][0]['definitions'][0]['definition']
+        except (KeyError, IndexError):
+            return "정의를 찾을 수 없음"
+    else:
+        return "정의를 찾을 수 없음"
+
+
+    
+def get_nouns_verbs(text):
+    doc = nlp(text)
+    filtered_words = [token.text for token in doc if token.pos_ in ('NOUN', 'VERB')]
+    unique_words = list(dict.fromkeys(filtered_words))
+    return unique_words[:3]
+
+def get_three_words_meanings(lyrics):
+    words = get_nouns_verbs(lyrics)
+    result = []
+    for w in words:
+        meaning = get_definition(w.lower())  # ← 수정된 부분
+        result.append({'word': w, 'meaning': meaning})
+    return result
+
+
 
 if __name__ == '__main__':
     app.run(port=8090, debug=True)

@@ -1,63 +1,71 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>WORDIFY - 낱말 카드</title>
-    <link rel="stylesheet" href="../static/flashcard.css">
+    <link rel="stylesheet" href="../static/flashcard.css" />
 </head>
 <body>
     
-    <header>
-      <a href="homepage.html" class="logo">WORD<span>IFY</span></a>
-      <nav>
-        <ul>
-          <li>
-            <form action="streaks.html">
-              <button type="submit" class="nav-btn streaks">Streaks</button>
-            </form>
-          </li>
-          <li>
-            <form action="Wordify_Login.html">
-              <button type="submit" class="nav-btn signup">LOGIN/SIGNUP</button>
-            </form>
-          </li>
-          <li>
-            <div class="dropdown">
-              <button class="dropbtn"> 
-                <span class="dropbtn_icon">menu</span>
-              </button>
-              <div class="dropdown-content">
-                <a href="streaks.html">streaks</a>
-                <a href="flashcard.html">flashcards</a>
-                <a href="quiz.html">quiz</a>
-              </div>
-            </div>
-          </li>
-        </ul>
-  
-      </nav>
-      </header>
+<header>
+  <a href="homepage.html" class="logo">WORD<span>IFY</span></a>
+  <nav>
+    <ul>
+      <li>
+        <form action="streaks.html">
+          <button type="submit" class="nav-btn streaks">Streaks</button>
+        </form>
+      </li>
+      <li>
+        <form action="Wordify_Login.html">
+          <button type="submit" class="nav-btn signup">LOGIN/SIGNUP</button>
+        </form>
+      </li>
+      <li>
+        <div class="dropdown">
+          <button class="dropbtn">
+            <span class="dropbtn_icon">menu</span>
+          </button>
+          <div class="dropdown-content">
+            <a href="streaks.html">streaks</a>
+            <a href="flashcard.html">flashcards</a>
+            <a href="quiz.html">quiz</a>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </nav>
+</header>
 
-    </div>
-    <div class="container">
-        <h1 class="title">낱말 카드</h1>
+<div class="container">
+    <h1 class="title">낱말 카드</h1>
+
+    {% if flashcards %}
+        {% for card in flashcards %}
         <div class="card">
             <div class="card-content">
-                <p>단어/정의</p>
+                <p><strong>{{ card.word }}</strong></p>
+                <p>{{ card.meaning }}</p>
                 <div class="icon-area">
                     <span class="icon-sound">🔈</span>
                     <span class="icon-star">☆</span>
                 </div>
             </div>
         </div>
-        <div class="button-group">
-            <button class="prev-btn">이전 단어</button>
-            <button class="next-btn">다음 단어</button>
-        </div>
-        <div class="quiz-btn-group">
-            <a href="quiz.html" class="quiz-btn">퀴즈 보기</a>
-        </div>
+        {% endfor %}
+    {% else %}
+        <p>단어 정보가 없습니다.</p>
+    {% endif %}
+
+    <div class="button-group">
+        <button class="prev-btn">이전 단어</button>
+        <button class="next-btn">다음 단어</button>
     </div>
+    <div class="quiz-btn-group">
+        <a href="quiz.html" class="quiz-btn">퀴즈 보기</a>
+    </div>
+</div>
+
 </body>
 </html>

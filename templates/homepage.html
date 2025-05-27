@@ -100,9 +100,10 @@
       </form>
     
       <!-- 선택하기 버튼 -->
-      <form action="/next" method="get">
-        <button class="next-button">선택하기</button>
-      </form>
+      <form action="{{ url_for('select_song') }}" method="get">
+        <button class="next-button" type="submit">선택하기</button>
+    </form>
+    
       
       <script>
       document.querySelector('.next-button').addEventListener('click', function (event) {
