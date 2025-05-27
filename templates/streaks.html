@@ -1,63 +1,93 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WORDIFY - Streaks</title>
-    <link rel="stylesheet" href="../static/streaks.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WORDIFY - Streaks</title>
+  <link rel="stylesheet" href="../static/streaks.css" />
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
 </head>
 <body>
-    <header>
-      <a href="homepage.html" class="logo">WORD<span>IFY</span></a>
-      <nav>
-        <ul>
-          <li>
-            <form action="streaks.html">
-              <button type="submit" class="nav-btn streaks">Streaks</button>
-            </form>
-          </li>
-          <li>
-            <form action="Wordify_Login.html">
-              <button type="submit" class="nav-btn signup">LOGIN/SIGNUP</button>
-            </form>
-          </li>
-          <li>
-            <div class="dropdown">
-              <button class="dropbtn"> 
-                <span class="dropbtn_icon">menu</span>
-              </button>
-              <div class="dropdown-content">
-                <a href="streaks.html">streaks</a>
-                <a href="flashcard.html">flashcards</a>
-                <a href="quiz.html">quiz</a>
-              </div>
+  <header>
+    <a href="/" class="logo">WORD<span>IFY</span></a>
+    <nav>
+      <ul>
+        <li>
+          <a href="/streaks" class="nav-btn streaks">Streaks</a>
+        </li>
+        <li>
+          <a href="/login" class="nav-btn signup">LOGIN/SIGNUP</a>
+        </li>
+        <li>
+          <div class="dropdown">
+            <button class="dropbtn">
+              <span class="dropbtn_icon">menu</span>
+            </button>
+            <div class="dropdown-content">
+              <a href="/streaks">streaks</a>
+              <a href="/flashcard">flashcards</a>
+              <a href="/quiz">quiz</a>
             </div>
-          </li>
-        </ul>
-  
-      </nav>
-      </header>
+          </div>
+        </li>
+      </ul>
+    </nav>
+  </header>
 
-    <main>
-        <h1 class="page-title">Streaks</h1>
+  <main>
+    <h1 class="page-title">Streaks</h1>
 
-        <div class="calendar-box">
-            <div class="calendar-placeholder">
-                <!-- Calendar will go here -->
-            </div>
-        </div>
+    <div class="calendar-box">
+      <div class="calendar-placeholder" id="calendar">
+        <!-- Calendar will go here -->
+      </div>
+    </div>
 
-        <div class="word-count-circle">
-            <div class="word-count-title">이번 달 학습 단어 수</div>
-            <div class="word-count-number">###</div>
-        </div>
+    <div class="word-count-circle">
+      <div class="word-count-title">이번 달 학습 단어 수</div>
+      <div class="word-count-number">###</div>
+    </div>
 
-        <div class="graph-box">
-            <div class="graph-title">다른 사용자와 비교</div>
-            <div class="graph-placeholder">
-                <!-- Graph will go here -->
-            </div>
-        </div>
-    </main>
+    <div class="graph-box">
+      <div class="graph-title">다른 사용자와 비교</div>
+      <div class="graph-placeholder">
+        <!-- Graph will go here -->
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const username = "{{ username }}";
+
+      const calendarEl = document.getElementById("calendar");
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: "dayGridMonth",
+        headerToolbar: {
+          left: "prev,next today",
+          center: "title",
+          right: ""
+        },
+        events: async function (fetchInfo, successCallback, failureCallback) {
+          try {
+            const res = await fetch(`/api/streaks/${username}`);
+            const data = await res.json();
+            const events = data.map((date) => ({
+              title: "✅",
+              start: date,
+              allDay: true
+            }));
+            successCallback(events);
+          } catch (err) {
+            console.error("Error loading streaks:", err);
+            failureCallback(err);
+          }
+        }
+      });
+
+      calendar.render();
+    });
+  </script>
 </body>
 </html>
