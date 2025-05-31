@@ -4,18 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WORDIFY - Streaks</title>
-  <link rel="stylesheet" href="../static/streaks.css" />
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+
+  <!-- ✅ FullCalendar CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
+
+  <!-- ✅ Custom Styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='streaks.css') }}">
 </head>
 <body>
   <header>
     <a href="/" class="logo">WORD<span>IFY</span></a>
     <nav>
       <ul>
-        <li>
-          <a href="/streaks" class="nav-btn streaks">Streaks</a>
-        </li>
+        <li><a href="/streaks" class="nav-btn streaks">Streaks</a></li>
         <li>
           {% if current_user.is_authenticated %}
             <a href="/logout" class="nav-btn">LOGOUT</a>
@@ -25,9 +26,7 @@
         </li>
         <li>
           <div class="dropdown">
-            <button class="dropbtn">
-              <span class="dropbtn_icon">menu</span>
-            </button>
+            <button class="dropbtn"><span class="dropbtn_icon">menu</span></button>
             <div class="dropdown-content">
               <a href="/streaks">streaks</a>
               <a href="/flashcard">flashcards</a>
@@ -43,9 +42,7 @@
     <h1 class="page-title">Streaks</h1>
 
     <div class="calendar-box">
-      <div class="calendar-placeholder" id="calendar">
-        <!-- Calendar will go here -->
-      </div>
+      <div id="calendar"></div>
     </div>
 
     <div class="word-count-circle">
@@ -55,19 +52,23 @@
 
     <div class="graph-box">
       <div class="graph-title">다른 사용자와 비교</div>
-      <div class="graph-placeholder">
-        <!-- Graph will go here -->
-      </div>
+      <div class="graph-placeholder">그래프 데이터 준비 중</div>
     </div>
   </main>
 
+  <!-- ✅ FullCalendar Script -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+  <!-- ✅ JavaScript for Calendar -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const username = "{{ username }}";
+      console.log("👤 Username:", username);
 
       const calendarEl = document.getElementById("calendar");
       const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: "dayGridMonth",
+        height: "auto",
         headerToolbar: {
           left: "prev,next today",
           center: "title",
@@ -77,14 +78,14 @@
           try {
             const res = await fetch(`/api/streaks/${username}`);
             const data = await res.json();
-            const events = data.map((date) => ({
-              title: "✅",
+            const events = data.map(date => ({
               start: date,
-              allDay: true
+              allDay: true,
+              classNames: ['fire-streak']  // 🔥 Apply fire visual via CSS
             }));
             successCallback(events);
           } catch (err) {
-            console.error("Error loading streaks:", err);
+            console.error("❌ Error loading streaks:", err);
             failureCallback(err);
           }
         }

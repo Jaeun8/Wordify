@@ -89,6 +89,13 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password, password):
             login_user(user, remember=True)
+
+            # ✅ Record login streak
+            today = date.today()
+            if not Streak.query.filter_by(username=user.username, date=today).first():
+                db.session.add(Streak(username=user.username, date=today))
+                db.session.commit()
+
             return redirect(url_for('home'))
         else:
             return render_template('Wordify_Login.html', error="아이디 또는 비밀번호가 잘못되었습니다.")
