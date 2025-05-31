@@ -2,7 +2,6 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WORDIFY 회원가입</title>
     <link rel="stylesheet" href="../static/Wordify_Signup.css">
 </head>
@@ -10,12 +9,10 @@
     <div class="container">
         <h1><span class="highlight">WORDIFY</span>에 오신걸 환영합니다.</h1>
         <form method="POST" action="/signup">
-            
             {% if error %}
                 <p style="color: red;">{{ error }}</p>
             {% endif %}
 
-            
             <div class="form-group">
                 <label for="your-name">Your Name:</label>
                 <input type="text" id="your-name" name="your-name" required>
@@ -36,6 +33,7 @@
                 <label for="confirm-password">Confirm Password:</label>
                 <input type="password" id="confirm-password" name="confirm-password" required>
             </div>
+
             <button type="submit">회원 가입</button>
         </form>
     </div>

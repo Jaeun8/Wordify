@@ -2,7 +2,6 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WORDIFY 로그인</title>
     <link rel="stylesheet" href="../static/Wordify_Login.css">
 </head>
@@ -13,7 +12,7 @@
             {% if error %}
                 <p style="color: red;">{{ error }}</p>
             {% endif %}
-            
+
             <div class="form-group">
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" required>
@@ -21,14 +20,13 @@
             <div class="form-group">
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required>
+            </div>
 
-
-    <!-- ✅ 버튼들을 묶는 div -->
-    <div class="button-group">
-        <button type="submit">로그인하기</button>
-        <a href="/signup" class="signup-btn">Signup</a>
+            <div class="button-group">
+                <button type="submit">로그인하기</button>
+                <a href="/signup" class="signup-btn">회원가입</a>
+            </div>
+        </form>
     </div>
-</form>
-
 </body>
 </html>

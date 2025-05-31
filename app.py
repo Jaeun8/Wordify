@@ -15,7 +15,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-# ------------------- User Model -------------------
+# ------------------- Models -------------------
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
@@ -23,13 +23,11 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(256), nullable=False)
 
-# ------------------- Streak Model -------------------
 class Streak(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), nullable=False)
     date = db.Column(db.Date, default=date.today)
 
-# ------------------- User Loader -------------------
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -45,24 +43,7 @@ def home():
         "album_cover": "https://via.placeholder.com/150",
         "spotify_url": "#"
     }
-    return render_template('homepage.html', user=current_user, track=dummy_track)
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-
-        if not username or not password:
-            return render_template('Wordify_Login.html', error="모든 필드를 입력해주세요.")
-
-        user = User.query.filter_by(username=username).first()
-        if user and check_password_hash(user.password, password):
-            login_user(user, remember=True)  # <-- 여기에 remember=True 추가
-            return redirect(url_for('home'))
-        else:
-            return render_template('Wordify_Login.html', error="아이디 또는 비밀번호가 잘못되었습니다.")
-    return render_template('Wordify_Login.html')
+    return render_template('homepage.html', track=dummy_track)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -75,34 +56,44 @@ def signup():
 
         if not all([name, email, username, password, confirm_password]):
             return render_template('Wordify_Signup.html', error="모든 필드를 입력해주세요.")
-
         if password != confirm_password:
             return render_template('Wordify_Signup.html', error="비밀번호가 일치하지 않습니다.")
-
+        
         existing_user = User.query.filter(
             (User.username == username) | (User.email == email)
         ).first()
-
         if existing_user:
             return render_template('Wordify_Signup.html', error="이미 존재하는 사용자입니다.")
-
+        
         try:
-            new_user = User(
-                name=name,
-                email=email,
-                username=username,
-                password=generate_password_hash(password, method='pbkdf2:sha256')
-            )
-
+            hashed_pw = generate_password_hash(password, method='pbkdf2:sha256')
+            new_user = User(name=name, email=email, username=username, password=hashed_pw)
             db.session.add(new_user)
             db.session.commit()
             return redirect(url_for('login'))
-
         except Exception as e:
-            print(traceback.format_exc())  # Console log
+            print(traceback.format_exc())
             return render_template('Wordify_Signup.html', error=f"회원가입 중 오류 발생: {str(e)}")
 
     return render_template('Wordify_Signup.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        if not username or not password:
+            return render_template('Wordify_Login.html', error="모든 필드를 입력해주세요.")
+
+        user = User.query.filter_by(username=username).first()
+        if user and check_password_hash(user.password, password):
+            login_user(user, remember=True)
+            return redirect(url_for('home'))
+        else:
+            return render_template('Wordify_Login.html', error="아이디 또는 비밀번호가 잘못되었습니다.")
+    
+    return render_template('Wordify_Login.html')
 
 @app.route('/logout')
 @login_required
@@ -110,19 +101,18 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-# ------------------- Streak Routes -------------------
 @app.route('/streaks')
 @login_required
 def streaks_page():
     return render_template('streaks.html', username=current_user.username)
 
-@app.route("/api/streaks/<username>", methods=["GET"])
+@app.route('/api/streaks/<username>', methods=['GET'])
 @login_required
 def get_streaks(username):
     streaks = Streak.query.filter_by(username=username).all()
     return jsonify([s.date.isoformat() for s in streaks])
 
-@app.route("/api/streaks/add", methods=["POST"])
+@app.route('/api/streaks/add', methods=['POST'])
 @login_required
 def add_streak():
     data = request.json
@@ -140,7 +130,7 @@ def add_streak():
 
     return jsonify({"status": "success"})
 
-# ------------------- Main -------------------
+# ------------------- App Launch -------------------
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
