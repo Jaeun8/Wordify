@@ -127,7 +127,6 @@ main {
   box-sizing: border-box;
 }
 
-/* Calendar Grid */
 #calendar {
   width: 100%;
   min-height: 600px;
@@ -136,62 +135,6 @@ main {
   padding: 10px;
   box-sizing: border-box;
   overflow: hidden;
-}
-
-/* Word Count Circle */
-.word-count-circle {
-  background-color: #FFA500;
-  width: 200px;
-  height: 200px;
-  border-radius: 100px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 50px;
-  color: #1a1a1a;
-}
-
-.word-count-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.word-count-number {
-  font-size: 30px;
-  font-weight: bold;
-}
-
-/* Graph Box */
-.graph-box {
-  background-color: #FFA500;
-  width: 600px;
-  height: 400px;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.graph-title {
-  font-size: 20px;
-  font-weight: bold;
-  margin-top: 20px;
-  color: #1a1a1a;
-}
-
-.graph-placeholder {
-  width: 550px;
-  height: 300px;
-  background-color: #FFF4CC;
-  border-radius: 8px;
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #003049;
-  font-size: 20px;
 }
 
 /* 🔥 Fire Streak Style */
@@ -206,7 +149,7 @@ main {
   opacity: 0.9;
 }
 
-/* Position fire emoji inside the event */
+/* Base event override */
 .fc-daygrid-event {
   position: relative;
   background-color: transparent !important;
