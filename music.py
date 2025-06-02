@@ -130,6 +130,12 @@ def select_song():
 
     return render_template('flashcard.html', flashcards=flashcards)
 
+@app.route('/quiz')
+def quiz():
+    flashcards = session.get('flashcards', [])
+    if not flashcards:
+        return redirect(url_for('select_song'))
+    return render_template('quiz.html', flashcards=flashcards)
 
 
 def get_definition(word):

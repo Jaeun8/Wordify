@@ -1,40 +1,141 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wordify Quiz</title>
-    <link rel="stylesheet" href="../static/quiz.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wordify Quiz</title>
+  <link rel="stylesheet" href="../static/quiz.css">
 </head>
 <body>
-    <header>
-        <div class="header-left">
-            <a href="homepage.html" class="logo">WORDIFY</a>
-        </div>
-        <div class="header-right">
-            <a href="streaks.html">Streaks</a>
-            <a href="login.html">LOGIN/SIGNUP</a>
-        </div>
-    </header>
+  <header>
+    <div class="header-left">
+      <a href="homepage.html" class="logo">WORDIFY</a>
+    </div>
+    <div class="header-right">
+      <a href="streaks.html">Streaks</a>
+      <a href="login.html">LOGIN/SIGNUP</a>
+    </div>
+  </header>
 
-    <main>
-        <div class="quiz-header">
-            <h1>퀴즈</h1>
-            <div class="progress-badge">학습율 00%</div>
-        </div>
-        <p class="instruction">다음 정의 중 제시된 단어와 맞는 것을 고르시오</p>
+  <main>
+    <div class="quiz-header">
+      <h1>퀴즈</h1>
+      <div class="progress-badge">학습율 <span id="score">0</span>%</div>
+      <button onclick="toggleSwap()">뒤집기</button>
+    </div>
 
-        <div class="quiz-area-horizontal">
-            <div class="word-box">단어</div>
-            <div class="options">
-                <button class="option">정의 1</button>
-                <button class="option">정의 2</button>
-                <button class="option">정의 3</button>
-                <button class="option">정의 4</button>
-            </div>
-        </div>
+    <p class="instruction" id="instruction">다음 정의 중 제시된 단어와 맞는 것을 고르시오</p>
 
-        <button class="unknown-btn">모르겠어요</button>
-    </main>
+    <div class="quiz-area-horizontal">
+      <div class="word-box" id="quiz-question">단어</div>
+      <div class="options" id="quiz-options">
+        <!-- Options will be injected here -->
+      </div>
+    </div>
+
+    <button class="unknown-btn" onclick="nextQuiz(false)">모르겠어요</button>
+
+    <div id="result-area" style="display:none; margin-top:40px;">
+      <h2 id="result-msg"></h2>
+      <p>총 점수: <span id="final-score"></span>%</p>
+      <ul id="result-list"></ul>
+    </div>
+  </main>
+
+  <script>
+    const flashcards = JSON.parse('{{ flashcards|tojson|safe }}');
+    let current = 0;
+    let score = 0;
+    let swap = false;
+    let results = [];
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function toggleSwap() {
+      swap = !swap;
+      document.getElementById('instruction').textContent =
+        swap
+          ? '다음 단어 중 제시된 정의와 맞는 것을 고르시오'
+          : '다음 정의 중 제시된 단어와 맞는 것을 고르시오';
+      showQuiz();
+    }
+
+    function showQuiz() {
+      const item = flashcards[current];
+      const question = swap ? item.meaning : item.word;
+      const correct = swap ? item.word : item.meaning;
+
+      let distractors = flashcards
+        .filter((_, i) => i !== current)
+        .map(fc => swap ? fc.word : fc.meaning);
+      shuffle(distractors);
+      let options = distractors.slice(0, 3);
+      options.push(correct);
+      shuffle(options);
+
+      document.getElementById('quiz-question').textContent = question;
+      const container = document.getElementById('quiz-options');
+      container.innerHTML = '';
+      options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'option';
+        btn.textContent = opt;
+        btn.onclick = () => nextQuiz(opt === correct, opt);
+        container.appendChild(btn);
+      });
+    }
+
+    function nextQuiz(correct, chosen = '') {
+      if (correct) score++;
+
+      const currentItem = flashcards[current];
+      results.push({
+        word: currentItem.word,
+        meaning: currentItem.meaning,
+        correct,
+        userAnswer: chosen || '모르겠어요'
+      });
+
+      current++;
+      if (current < flashcards.length) {
+        showQuiz();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      document.getElementById('quiz-question').style.display = 'none';
+      document.getElementById('quiz-options').style.display = 'none';
+      document.querySelector('.instruction').style.display = 'none';
+      document.querySelector('.unknown-btn').style.display = 'none';
+
+      const percent = Math.round(score / flashcards.length * 100);
+      document.getElementById('score').textContent = percent;
+      document.getElementById('final-score').textContent = percent;
+
+      const msg = percent === 100
+        ? 'Great job! Amazing work! ✨'
+        : 'Keep it up! You\'re getting better! 🙌';
+      document.getElementById('result-msg').textContent = msg;
+
+      const ul = document.getElementById('result-list');
+      ul.innerHTML = '';
+      results.forEach(r => {
+        const li = document.createElement('li');
+        li.textContent = `${r.word} - ${r.meaning} : ${r.correct ? 'O' : 'X (답: ' + r.userAnswer + ')'}`;
+        ul.appendChild(li);
+      });
+
+      document.getElementById('result-area').style.display = 'block';
+    }
+
+    window.onload = showQuiz;
+  </script>
 </body>
 </html>
