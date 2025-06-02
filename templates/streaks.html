@@ -37,7 +37,10 @@
   </header>
 
   <main>
-    <h1 class="page-title">Streaks</h1>
+    <h1 class="page-title">
+      Streaks
+      <span id="streak-count" class="streak-count-box">0</span>
+    </h1>
 
     <div class="calendar-box">
       <div id="calendar"></div>
@@ -47,13 +50,12 @@
   <!-- ✅ FullCalendar JS -->
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
-  <!-- ✅ JS Calendar Script -->
+  <!-- ✅ Calendar Script -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const username = "{{ username }}";
-      console.log("👤 Username:", username);
-
       const calendarEl = document.getElementById("calendar");
+
       const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: "dayGridMonth",
         height: "auto",
@@ -71,6 +73,10 @@
               allDay: true,
               classNames: ['fire-streak']
             }));
+
+            // ✅ Set streak count in badge
+            document.getElementById("streak-count").textContent = `${events.length}`;
+
             successCallback(events);
           } catch (err) {
             console.error("❌ Error loading streaks:", err);
