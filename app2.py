@@ -10,6 +10,7 @@ import random
 import requests
 import spacy
 import os
+nlp = spacy.load("C:/Users/seohy/.vscode/Wordify/env/Lib/site-packages/en_core_web_sm/en_core_web_sm-3.8.0")
 
 app = Flask(__name__)
 app.secret_key = 'ywefewfwesdf'
