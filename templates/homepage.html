@@ -8,23 +8,27 @@
 </head>
 <body>
   <header>
-    <a href="homepage.html" class="logo">WORD<span>IFY</span></a>
+
+      <form action="{{ url_for('home') }}">
+        <button class="logo" type="submit">WORD<span>IFY</span></button>
+      </form>
+     
     <nav>
       <ul>
         <li>
-          <form action="/streaks">
-            <button type="submit" class="nav-btn streaks">Streaks</button>
+          <form action="{{ url_for('streaks') }}">
+            <button class="nav-btn streaks">Streaks</button>
           </form>
         </li>
         <li>
           {% if current_user is defined and current_user.is_authenticated %}
-          <form action="/logout">
-              <button type="submit" class="nav-btn">Logout</button>
-            </form>
+          <form action="{{ url_for('logout') }}">
+              <button class="nav-btn">Logout</button>
+          </form>
           {% else %}
-            <form action="/login">
-              <button type="submit" class="nav-btn">Login/Signup</button>
-            </form>
+          <form action="{{ url_for('login_page') }}">
+            <button class="nav-btn">Login/Signup</button>
+          </form>
           {% endif %}
         </li>
         <li>
@@ -33,9 +37,13 @@
               <span class="dropbtn_icon">menu</span>
             </button>
             <div class="dropdown-content">
-              <a href="/streaks">streaks</a>
-              <a href="/flashcard">flashcards</a>
-              <a href="/quiz">quiz</a>
+              <form action="{{ url_for('flashcard') }}">
+                <button  class="nav-btn flashcard">flashcard</button>
+              </form>
+              <form action="{{ url_for('quiz') }}">
+                <button  class="nav-btn quiz">quiz</button>
+              </form>
+
             </div>
           </div>
         </li>

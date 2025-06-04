@@ -18,6 +18,27 @@ sp_oauth = SpotifyOAuth(client_id=CLIENT_ID,
                         redirect_uri=REDIRECT_URI,
                         scope=SCOPE)
 
+@app.route('/streaks')
+def streaks():
+    return render_template('streaks.html')  
+
+@app.route('/flashcard')
+def flashcard():
+    return render_template('flashcard.html')  
+
+@app.route('/quiz')
+def quiz():
+    return render_template('quiz.html')  
+
+@app.route('/login')
+def login_page():
+    return render_template('Wordify_Login.html')  
+
+@app.route('/signup')
+def signup_page():
+    return render_template('Wordify_Signup.html')  
+
+
 # 가사 API
 def get_lyrics_ovh(artist, title):
     url = f"https://api.lyrics.ovh/v1/{artist}/{title}"
