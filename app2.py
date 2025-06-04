@@ -195,8 +195,15 @@ def flashcard():
 @app.route('/quiz')
 @login_required
 def quiz():
-    flashcards = Flashcard.query.filter_by(user_id=current_user.id).limit(10).all()
+    flashcards = session.get('flashcards', [])
+    if not flashcards:
+        # 세션에 없으면 DB에서 기본 10개 가져오기 (혹은 빈 리스트)
+        flashcards = Flashcard.query.filter_by(user_id=current_user.id).limit(10).all()
+        # DB에서 가져온 flashcards는 ORM 객체니까 dict 형태로 변환 필요
+        flashcards = [{'word': f.word, 'meaning': f.meaning} for f in flashcards]
+
     return render_template('quiz.html', flashcards=flashcards)
+
 
 # 가사 API
 def get_lyrics_ovh(artist, title):
