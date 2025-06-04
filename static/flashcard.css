@@ -126,7 +126,10 @@ header {
   text-decoration: none;
   font-size: 34px;
   color: white;
+  background-color: transparent;
+  border: none;
 }
+
 
 .logo span {
   color:#FFA500;
