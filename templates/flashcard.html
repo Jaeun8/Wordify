@@ -29,6 +29,7 @@
   </div>
 
   <div class="button-group">
+    <button class="prev-btn" onclick="loadPrevWord()">이전 단어</button>
     <button class="next-btn" onclick="loadNextWord()">다음 단어</button>
     <form method="get" action="/select" style="display:inline;">
       <button class="next-btn" type="submit">🎵 새 단어</button>
@@ -57,6 +58,23 @@
       document.getElementById('meaning').textContent = data.meaning;
     } catch (err) {
       console.error('단어 불러오기 실패:', err);
+    }
+  }
+
+  async function loadPrevWord() {
+    try {
+      const res = await fetch('/prev-word');
+      const data = await res.json();
+
+      if (data.done) {
+        alert(data.message || '첫 단어입니다.');
+        return;
+      }
+
+      document.getElementById('word').textContent = data.word;
+      document.getElementById('meaning').textContent = data.meaning;
+    } catch (err) {
+      console.error('이전 단어 불러오기 실패:', err);
     }
   }
 

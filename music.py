@@ -18,6 +18,7 @@ sp_oauth = SpotifyOAuth(client_id=CLIENT_ID,
                         redirect_uri=REDIRECT_URI,
                         scope=SCOPE)
 
+# 가사 API
 def get_lyrics_ovh(artist, title):
     url = f"https://api.lyrics.ovh/v1/{artist}/{title}"
     response = requests.get(url)
@@ -27,6 +28,7 @@ def get_lyrics_ovh(artist, title):
     else:
         return None
 
+# 랜덤 트랙 & 가사
 def get_track_with_lyrics(sp):
     pop_artists = [
         'Taylor Swift', 'Ed Sheeran', 'Ariana Grande', 'Bruno Mars', 'Billie Eilish',
@@ -40,14 +42,13 @@ def get_track_with_lyrics(sp):
         tracks = results['tracks']['items']
 
         if not tracks:
-            continue  # 트랙 없으면 다시 시도
+            continue
 
         random_track = random.choice(tracks)
         lyrics = get_lyrics_ovh(random_track['artists'][0]['name'], random_track['name'])
 
-        if lyrics:  # 가사 있으면 리턴
+        if lyrics:
             return random_track, lyrics
-        # 가사 없으면 다시 시도
 
 @app.route('/')
 def login():
@@ -98,46 +99,9 @@ def next_track():
     }
     return jsonify(track_info)
 
-nlp = spacy.load("en_core_web_sm")  # spaCy 모델 로드, 사전에 설치 필요
+nlp = spacy.load("en_core_web_sm")  # spaCy 모델 로드 (사전 설치 필요)
 
-
-@app.route('/next-word')
-def next_word():
-    flashcards = session.get('flashcards', [])
-    index = session.get('flashcard_index', 0)
-
-    if index >= len(flashcards):
-        return jsonify({'done': True})
-
-    word_data = flashcards[index]
-    session['flashcard_index'] = index + 1
-    return jsonify({'word': word_data['word'], 'meaning': word_data['meaning']})
-
-@app.route('/select')
-def select_song():
-    token_info = session.get('token_info', None)
-    if not token_info:
-        return redirect(url_for('login'))
-
-    sp = spotipy.Spotify(auth=token_info['access_token'])
-    random_track, lyrics = get_track_with_lyrics(sp)
-
-    flashcards = get_three_words_meanings(lyrics)
-
-    # 세션에 저장 (초기 인덱스 0)
-    session['flashcards'] = flashcards
-    session['flashcard_index'] = 0
-
-    return render_template('flashcard.html', flashcards=flashcards)
-
-@app.route('/quiz')
-def quiz():
-    flashcards = session.get('flashcards', [])
-    if not flashcards:
-        return redirect(url_for('select_song'))
-    return render_template('quiz.html', flashcards=flashcards)
-
-
+# 사전 API
 def get_definition(word):
     url = f"https://api.dictionaryapi.dev/api/v2/entries/en/{word}"
     response = requests.get(url)
@@ -150,23 +114,76 @@ def get_definition(word):
     else:
         return "정의를 찾을 수 없음"
 
-
-    
+# 명사/동사 추출
 def get_nouns_verbs(text):
     doc = nlp(text)
     filtered_words = [token.text for token in doc if token.pos_ in ('NOUN', 'VERB')]
     unique_words = list(dict.fromkeys(filtered_words))
-    return unique_words[:3]
+    return unique_words
 
-def get_three_words_meanings(lyrics):
+# 단어 리스트 & 의미 추출
+def get_words_meanings(lyrics, count=10):
     words = get_nouns_verbs(lyrics)
     result = []
-    for w in words:
-        meaning = get_definition(w.lower())  # ← 수정된 부분
+    for w in words[:count]:
+        meaning = get_definition(w.lower())
         result.append({'word': w, 'meaning': meaning})
     return result
 
+# 새 단어 선택 후 flashcard.html로 렌더링
+@app.route('/select')
+def select_song():
+    token_info = session.get('token_info', None)
+    if not token_info:
+        return redirect(url_for('login'))
+
+    sp = spotipy.Spotify(auth=token_info['access_token'])
+    random_track, lyrics = get_track_with_lyrics(sp)
+
+    flashcards = get_words_meanings(lyrics, count=10)
+
+    session['flashcards'] = flashcards
+    session['flashcard_index'] = 0
+
+    return render_template('flashcard.html', flashcards=flashcards)
+
+# 하나씩 단어 넘겨주는 API
+@app.route('/next-word')
+def next_word():
+    flashcards = session.get('flashcards', [])
+    index = session.get('flashcard_index', 0)
+
+    if index >= len(flashcards):
+        return jsonify({'done': True})
+
+    word_data = flashcards[index]
+    session['flashcard_index'] = index + 1
+    return jsonify({'word': word_data['word'], 'meaning': word_data['meaning']})
+
+# (선택) 10개 전부 한 번에 넘기는 API
+@app.route('/next-words')
+def next_words():
+    flashcards = session.get('flashcards', [])
+    if not flashcards:
+        return jsonify({'done': True})
+    return jsonify({'words': flashcards})
+
+@app.route('/prev-word')
+def prev_word():
+    flashcards = session.get('flashcards', [])
+    index = session.get('flashcard_index', 1)  # 기본 1부터 시작 (next_word 호출 후 상태 가정)
+    
+    if index <= 1:
+        return jsonify({'done': True, 'message': '첫 단어입니다.'})
+    
+    index -= 2  
+    session['flashcard_index'] = index + 1
+    
+    word_data = flashcards[index]
+    return jsonify({'word': word_data['word'], 'meaning': word_data['meaning']})
 
 
 if __name__ == '__main__':
     app.run(port=8090, debug=True)
+
+
