@@ -10,9 +10,14 @@ import random
 import requests
 import spacy
 import os
-import en_core_web_sm
 
-nlp = en_core_web_sm.load()
+try:
+    import en_core_web_sm
+    nlp = en_core_web_sm.load()
+except ImportError:
+    # fallback: spacy.load 직접 호출
+    nlp = spacy.load("en_core_web_sm")
+
 
 app = Flask(__name__)
 app.secret_key = 'ywefewfwesdf'
