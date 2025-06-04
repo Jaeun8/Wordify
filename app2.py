@@ -145,7 +145,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('login'))
+    return redirect(url_for('index'))
 
 @app.route('/streaks')
 @login_required
@@ -184,6 +184,8 @@ def flashcard():
 @app.route('/quiz')
 def quiz():
     return render_template('quiz.html')  
+
+
 
 # 가사 API
 def get_lyrics_ovh(artist, title):

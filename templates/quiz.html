@@ -8,13 +8,48 @@
 </head>
 <body>
   <header>
-    <div class="header-left">
-      <a href="homepage.html" class="logo">WORDIFY</a>
-    </div>
-    <div class="header-right">
-      <a href="streaks.html">Streaks</a>
-      <a href="login.html">LOGIN/SIGNUP</a>
-    </div>
+
+    <form action="{{ url_for('home') }}">
+      <button class="logo" type="submit">WORD<span>IFY</span></button>
+    </form>
+   
+    <nav>
+      <ul>
+        <li>
+          <form action="{{ url_for('streaks_page') }}">
+            <button class="nav-btn streaks">Streaks</button>
+          </form>
+        </li>
+        
+        <li>
+          <div class="dropdown">
+            <button class="dropbtn"> 
+              <span class="dropbtn_icon">menu</span>
+            </button>
+            <div class="dropdown-content">
+              <form action="{{ url_for('flashcard') }}">
+                <button  class="flashcard flashcard-btn">flashcard</button>
+              </form>
+              <form action="{{ url_for('quiz') }}">
+                <button  class="quiz-btn quiz">quiz</button>
+              </form>
+              <li>
+                {% if current_user is defined and current_user.is_authenticated %}
+                <form action="{{ url_for('logout') }}">
+                    <button class="nav-btn">Logout</button>
+                </form>
+                {% else %}
+                <form action="{{ url_for('login') }}">
+                  <button class="nav-btn">Login/Signup</button>
+                </form>
+                {% endif %}
+              </li>
+            </div>
+          </div>
+        </li>
+      </ul>
+
+    </nav>
   </header>
 
   <main>
