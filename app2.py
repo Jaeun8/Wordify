@@ -9,13 +9,22 @@ from spotipy.oauth2 import SpotifyOAuth
 import random
 import requests
 import spacy
+import os
 
 app = Flask(__name__)
 app.secret_key = 'ywefewfwesdf'
 app.config['SECRET_KEY'] = 'your_secret_key_here'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# 1) 데이터베이스 경로 및 폴더 처리 - instance 폴더가 없으면 생성
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+INSTANCE_FOLDER = os.path.join(BASE_DIR, 'instance')
+
+if not os.path.exists(INSTANCE_FOLDER):
+    os.makedirs(INSTANCE_FOLDER)
+
+DB_PATH = os.path.join(INSTANCE_FOLDER, 'db.sqlite')
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_PATH}'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 login_manager = LoginManager()
@@ -32,8 +41,7 @@ sp_oauth = SpotifyOAuth(client_id=CLIENT_ID,
                         redirect_uri=REDIRECT_URI,
                         scope=SCOPE)
 
-
-# ------------ 모델 --------------
+# -------------- 모델 ----------------
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
@@ -46,11 +54,18 @@ class Streak(db.Model):
     username = db.Column(db.String(150), nullable=False)
     date = db.Column(db.Date, default=date.today)
 
+class Flashcard(db.Model):
+    __tablename__ = 'flashcard'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    word = db.Column(db.String(100))
+    meaning = db.Column(db.String(200))
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-#------------------ Routes -------------------
+# -------------- Routes ----------------
 @app.route('/')
 def index():
     auth_url = sp_oauth.get_authorize_url()
@@ -81,8 +96,6 @@ def home():
         'lyrics': lyrics
     }
     return render_template('homepage.html', track=track_info)
-
-
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -129,7 +142,6 @@ def login():
         if user and check_password_hash(user.password, password):
             login_user(user, remember=True)
 
-            # ✅ Record login streak
             today = date.today()
             if not Streak.query.filter_by(username=user.username, date=today).first():
                 db.session.add(Streak(username=user.username, date=today))
@@ -176,16 +188,15 @@ def add_streak():
 
     return jsonify({"status": "success"})
 
-
 @app.route('/flashcard')
 def flashcard():
     return render_template('flashcard.html')  
 
 @app.route('/quiz')
+@login_required
 def quiz():
-    return render_template('quiz.html')  
-
-
+    flashcards = Flashcard.query.filter_by(user_id=current_user.id).limit(10).all()
+    return render_template('quiz.html', flashcards=flashcards)
 
 # 가사 API
 def get_lyrics_ovh(artist, title):
@@ -219,8 +230,6 @@ def get_track_with_lyrics(sp):
         if lyrics:
             return random_track, lyrics
 
-
-
 @app.route('/next-track')
 def next_track():
     token_info = session.get('token_info', None)
@@ -241,7 +250,6 @@ def next_track():
 
 nlp = spacy.load("en_core_web_sm")  # spaCy 모델 로드 (사전 설치 필요)
 
-# 사전 API
 def get_definition(word):
     url = f"https://api.dictionaryapi.dev/api/v2/entries/en/{word}"
     response = requests.get(url)
@@ -254,14 +262,12 @@ def get_definition(word):
     else:
         return "정의를 찾을 수 없음"
 
-# 명사/동사 추출
 def get_nouns_verbs(text):
     doc = nlp(text)
     filtered_words = [token.text for token in doc if token.pos_ in ('NOUN', 'VERB')]
     unique_words = list(dict.fromkeys(filtered_words))
     return unique_words
 
-# 단어 리스트 & 의미 추출
 def get_words_meanings(lyrics, count=10):
     words = get_nouns_verbs(lyrics)
     result = []
@@ -270,7 +276,6 @@ def get_words_meanings(lyrics, count=10):
         result.append({'word': w, 'meaning': meaning})
     return result
 
-# 새 단어 선택 후 flashcard.html로 렌더링
 @app.route('/select')
 def select_song():
     token_info = session.get('token_info', None)
@@ -287,7 +292,6 @@ def select_song():
 
     return render_template('flashcard.html', flashcards=flashcards)
 
-# 하나씩 단어 넘겨주는 API
 @app.route('/next-word')
 def next_word():
     flashcards = session.get('flashcards', [])
@@ -300,7 +304,6 @@ def next_word():
     session['flashcard_index'] = index + 1
     return jsonify({'word': word_data['word'], 'meaning': word_data['meaning']})
 
-# (선택) 10개 전부 한 번에 넘기는 API
 @app.route('/next-words')
 def next_words():
     flashcards = session.get('flashcards', [])
@@ -311,19 +314,21 @@ def next_words():
 @app.route('/prev-word')
 def prev_word():
     flashcards = session.get('flashcards', [])
-    index = session.get('flashcard_index', 1)  # 기본 1부터 시작 (next_word 호출 후 상태 가정)
-    
+    index = session.get('flashcard_index', 1)
+
     if index <= 1:
         return jsonify({'done': True, 'message': '첫 단어입니다.'})
-    
-    index -= 2  
+
+    index -= 2
     session['flashcard_index'] = index + 1
-    
+
     word_data = flashcards[index]
     return jsonify({'word': word_data['word'], 'meaning': word_data['meaning']})
 
+# DB 생성 (테이블 생성)
+with app.app_context():
+    db.create_all()
+    print("DB와 테이블이 생성되었습니다!")
 
 if __name__ == '__main__':
     app.run(port=8090, debug=True)
-
-

@@ -59,16 +59,20 @@
       <button onclick="toggleSwap()">뒤집기</button>
     </div>
 
-    <p class="instruction" id="instruction">다음 정의 중 제시된 단어와 맞는 것을 고르시오</p>
+    <p class="instruction" id="instruction">
+      다음 정의 중 제시된 단어와 맞는 것을 고르시오
+    </p>
 
-    <div class="quiz-area-horizontal">
-      <div class="word-box" id="quiz-question">단어</div>
-      <div class="options" id="quiz-options">
-        <!-- Options will be injected here -->
+    <div class="quiz-area-horizontal" style="display: flex; align-items: center; gap: 20px;">
+      <div class="word-box" id="quiz-question" style="font-size: 1.8em; min-width: 150px; padding: 10px; border: 1px solid #ccc;">
+        단어
+      </div>
+      <div class="options" id="quiz-options" style="display: flex; flex-wrap: wrap; gap: 10px; max-width: 600px;">
+        <!-- 4개의 의미 버튼이 여기 생성됨 -->
       </div>
     </div>
 
-    <button class="unknown-btn" onclick="nextQuiz(false)">모르겠어요</button>
+    <button class="unknown-btn" onclick="nextQuiz(false)" style="margin-top: 20px;">모르겠어요</button>
 
     <div id="result-area" style="display:none; margin-top:40px;">
       <h2 id="result-msg"></h2>
@@ -78,10 +82,12 @@
   </main>
 
   <script>
+    // flashcards 데이터는 서버에서 JSON으로 받아온다고 가정
     const flashcards = JSON.parse('{{ flashcards|tojson|safe }}');
+
     let current = 0;
     let score = 0;
-    let swap = false;
+    let swap = false; // false: 문제는 단어, 선택지는 뜻 / true: 문제는 뜻, 선택지는 단어
     let results = [];
 
     function shuffle(array) {
@@ -93,10 +99,9 @@
 
     function toggleSwap() {
       swap = !swap;
-      document.getElementById('instruction').textContent =
-        swap
-          ? '다음 단어 중 제시된 정의와 맞는 것을 고르시오'
-          : '다음 정의 중 제시된 단어와 맞는 것을 고르시오';
+      document.getElementById('instruction').textContent = swap
+        ? '다음 단어 중 제시된 정의와 맞는 것을 고르시오'
+        : '다음 정의 중 제시된 단어와 맞는 것을 고르시오';
       showQuiz();
     }
 
@@ -105,15 +110,25 @@
       const question = swap ? item.meaning : item.word;
       const correct = swap ? item.word : item.meaning;
 
-      let distractors = flashcards
-        .filter((_, i) => i !== current)
-        .map(fc => swap ? fc.word : fc.meaning);
+      // 10개 단어 중에서 4개 의미(뜻) 가져오기 (정답 포함)
+      let allMeanings = flashcards.map(fc => (swap ? fc.word : fc.meaning));
+
+      // 정답 포함 4개 의미 선택
+      let options = [correct];
+
+      // 정답 제외한 나머지에서 3개 랜덤 선택
+      let distractors = allMeanings.filter(m => m !== correct);
       shuffle(distractors);
-      let options = distractors.slice(0, 3);
-      options.push(correct);
+      options = options.concat(distractors.slice(0, 3));
+
       shuffle(options);
 
-      document.getElementById('quiz-question').textContent = question;
+      // 문제 단어/뜻 표시
+      const questionBox = document.getElementById('quiz-question');
+      questionBox.textContent = question;
+      questionBox.style.display = 'block';
+
+      // 선택지 버튼 생성
       const container = document.getElementById('quiz-options');
       container.innerHTML = '';
       options.forEach(opt => {
@@ -123,6 +138,13 @@
         btn.onclick = () => nextQuiz(opt === correct, opt);
         container.appendChild(btn);
       });
+
+      // 결과 영역 숨기기
+      document.getElementById('result-area').style.display = 'none';
+      document.querySelector('.unknown-btn').style.display = 'inline-block';
+      document.querySelector('.instruction').style.display = 'block';
+      document.getElementById('quiz-options').style.display = 'flex';
+
     }
 
     function nextQuiz(correct, chosen = '') {
@@ -150,20 +172,23 @@
       document.querySelector('.instruction').style.display = 'none';
       document.querySelector('.unknown-btn').style.display = 'none';
 
-      const percent = Math.round(score / flashcards.length * 100);
+      const percent = Math.round((score / flashcards.length) * 100);
       document.getElementById('score').textContent = percent;
       document.getElementById('final-score').textContent = percent;
 
-      const msg = percent === 100
-        ? 'Great job! Amazing work! ✨'
-        : 'Keep it up! You\'re getting better! 🙌';
+      const msg =
+        percent === 100
+          ? 'Great job! Amazing work! ✨'
+          : "Keep it up! You're getting better! 🙌";
       document.getElementById('result-msg').textContent = msg;
 
       const ul = document.getElementById('result-list');
       ul.innerHTML = '';
       results.forEach(r => {
         const li = document.createElement('li');
-        li.textContent = `${r.word} - ${r.meaning} : ${r.correct ? 'O' : 'X (답: ' + r.userAnswer + ')'}`;
+        li.textContent = `${r.word} - ${r.meaning} : ${
+          r.correct ? 'O' : 'X (답: ' + r.userAnswer + ')'
+        }`;
         ul.appendChild(li);
       });
 

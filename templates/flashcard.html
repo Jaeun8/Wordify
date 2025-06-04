@@ -73,8 +73,9 @@
 
   <!-- 퀴즈 보기 버튼 추가 -->
   <div class="quiz-btn-group">
-    <a href="/quiz" class="quiz-btn">퀴즈 보기</a>
-    <button class="quiz-btn" onclick="saveCurrentWord()">단어들 저장하기</button>
+    <form action="{{ url_for('quiz') }}">
+      <button class="quiz-btn">퀴즈보기</button>
+    </form>
   </div>
 
   <script>
@@ -112,33 +113,7 @@
         console.error('이전 단어 불러오기 실패:', err);
       }
     }
-  
-    // ✅ 단어 저장하기 함수
-    async function saveCurrentWord() {
-      const word = document.getElementById('word').textContent;
-      const meaning = document.getElementById('meaning').textContent;
-  
-      if (word === '끝!' || word === '단어') {
-        alert('저장할 단어가 없습니다.');
-        return;
-      }
-  
-      try {
-        const res = await fetch('/api/save-word', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ word, meaning })
-        });
-  
-        const result = await res.json();
-        alert(result.message || '저장 완료!');
-      } catch (err) {
-        console.error('단어 저장 실패:', err);
-        alert('단어 저장에 실패했습니다.');
-      }
-    }
+
   
     window.onload = loadNextWord;
   </script>
