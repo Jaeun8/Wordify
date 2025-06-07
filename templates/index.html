@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wordify</title>
+  <link rel="stylesheet" href="../static/homepage.css" />
+</head>
+<body>
+  <header>
+    <form action="{{ url_for('home') }}">
+      <button class="logo" type="submit">WORD<span>IFY</span></button>
+    </form>
+     
+    <nav>
+      <ul>
+        <li>
+          <form action="{{ url_for('streaks_page') }}">
+            <button class="nav-btn streaks">Streaks</button>
+          </form>
+        </li>
+        <li>
+          <a href="{{ url_for('spotify_login') }}">
+            <button>Spotify로 로그인</button>
+          </a>
+        </li>
+        <li>
+          <div class="dropdown">
+            <button class="dropbtn"> 
+              <span class="dropbtn_icon">menu</span>
+            </button>
+            <div class="dropdown-content">
+              <form action="{{ url_for('flashcard') }}">
+                <button class="flashcard flashcard-btn">flashcard</button>
+              </form>
+              <form action="{{ url_for('quiz') }}">
+                <button class="quiz-btn quiz">quiz</button>
+              </form>
+              <li>
+                {% if current_user is defined and current_user.is_authenticated %}
+                <form action="{{ url_for('logout') }}">
+                    <button class="nav-btn">Logout</button>
+                </form>
+                {% else %}
+                <form action="{{ url_for('login') }}">
+                  <button class="nav-btn">Login/Signup</button>
+                </form>
+                {% endif %}
+              </li>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="main">
+    <div class="main-text">
+      <h1>자신만의<br>어휘 플레이리스트.</h1>
+      <p>노래를 들으며 단어의 뜻과 발음을 함께 익혀보세요<br>
+        Wordify는 듣는 즐거움과 공부를 하나로 이어줍니다!</p>
+      <button>TAKE A LOOK</button>
+    </div>
+  </section>
+
+  <section class="features">
+    <h2>이 기능들을 사용해 보세요!</h2>
+    <div class="feature-cards">
+      <div class="card">
+        <h3>노래 추천 받기</h3>
+        <div class="placeholder"><img src="../static/music.png" alt="노래 추천"/></div>
+        <p>추천 받은 노래들을 들으면서<br>모르는 단어를 정리해봐요</p>
+      </div>
+      <div class="card">
+        <h3>단어장 만들기</h3>
+        <div class="placeholder"><img src="../static/word.png" alt="단어장 만들기"/></div>
+        <p>모르는 단어들을 모아서<br>단어장을 만들고 테스트해봐요</p>
+      </div>
+      <div class="card">
+        <h3>다른 사용자와 대결</h3>
+        <div class="placeholder"><img src="../static/vs.png" alt="사용자 대결"/></div>
+        <p>학습한 단어수를 다른 사용자와<br>비교해보고 1등을 차지해보세요</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="song-section">
+    <h2>오늘의 노래</h2>
+    <div class="song-content">
+      <div class="song-cover">
+        <a href="{{ track.spotify_url }}" target="_blank" rel="noopener noreferrer">
+          <img src="{{ track.album_cover }}" alt="앨범 커버" />
+        </a>
+        <h3 class="song-title">{{ track.title }}</h3>
+        <p class="song-artist">👤 {{ track.artist }}</p>
+      </div>
+      
+      <div class="song-lyrics">
+        {{ track.lyrics }}
+      </div> 
+    </div>
+
+    <div class="song-controls">
+      <form id="next-track-form" action="/next-track" method="get">
+        <button class="next-button" type="button">다음 곡</button>
+      </form>
+      <form action="{{ url_for('select_song') }}" method="get">
+        <button class="next-button" type="submit">선택하기</button>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    document.querySelector('.next-button[type="button"]').addEventListener('click', function (event) {
+      event.preventDefault();
+
+      fetch('/next-track')
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            alert('노래를 불러올 수 없습니다!');
+            return;
+          }
+
+          document.querySelector('.song-cover img').src = data.album_cover;
+          document.querySelector('.song-cover a').href = data.spotify_url;
+          document.querySelector('.song-title').textContent = data.title;
+          document.querySelector('.song-artist').textContent = '👤 ' + data.artist;
+          document.querySelector('.song-lyrics').textContent = data.lyrics || '가사를 불러올 수 없습니다.';
+        })
+        .catch(() => alert('노래를 불러오는 중 오류가 발생했습니다.'));
+    });
+  </script>
+</body>
+</html>
