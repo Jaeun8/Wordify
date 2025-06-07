@@ -26,7 +26,7 @@
               <span class="dropbtn_icon">menu</span>
             </button>
             <div class="dropdown-content">
-              <form action="{{ url_for('flashcard') }}">
+              <form action="{{ url_for('my_flashcard') }}">
                 <button class="flashcard flashcard-btn">flashcard</button>
               </form>
               <form action="{{ url_for('quiz') }}">
@@ -81,8 +81,7 @@
   </main>
 
   <script>
-    const flashcards = JSON.parse('{{ flashcards|tojson|safe }}');
-
+    const flashcards = JSON.parse('{{ quiz_words | tojson | safe }}');
     let current = 0;
     let score = 0;
     let swap = false;
