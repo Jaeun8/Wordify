@@ -79,21 +79,31 @@
   {% else %}
     <p style="text-align:center;">저장된 단어가 없습니다.</p>
   {% endif %}
+    <form action="{{ url_for('quiz') }}" style="display: inline-block; margin-right: 20px;">
+      <button type="submit" class="quiz-go-btn">퀴즈 보기</button>
+    </form>
+    
+    <form action="{{ url_for('my_flashcard') }}" style="display: inline-block;">
+      <button id="flashcard-go-btn" class="flashcard-go-btn" style="display:inline-block;">Flashcard 가기</button>
+    </form>
 </main>
 
 
 <script>
   const words = JSON.parse('{{ word_list | tojson | safe }}');
-  const buttonsContainer = document.getElementById('list-buttons-container');
-  const wordListDiv = document.getElementById('word-list');
-  const wordsPerList = 10;
+const buttonsContainer = document.getElementById('list-buttons-container');
+const wordListDiv = document.getElementById('word-list');
+const wordsPerList = 10;
+let currentListIndex = 1; // 현재 보고있는 리스트 번호
 
-  // 리스트 이름 버튼 눌렀을 때 단어 출력 함수
-  function showListWords(listIndex) {
+function showListWords(listIndex) {
+  currentListIndex = listIndex;
+
   const start = (listIndex - 1) * wordsPerList;
   const end = start + wordsPerList;
   const currentList = words.slice(start, end);
 
+  // 단어 출력
   wordListDiv.innerHTML = `<h2>List ${listIndex}</h2>`;
   const ul = document.createElement('ul');
 
@@ -109,26 +119,33 @@
   const allButtons = document.querySelectorAll('.list-button');
   allButtons.forEach(btn => btn.classList.remove('active'));
   allButtons[listIndex - 1].classList.add('active');
+
+  // hidden input에 현재 리스트 단어 JSON 저장
+  const hiddenInput = document.getElementById('words_data');
+  if(hiddenInput) {
+    hiddenInput.value = JSON.stringify(currentList);
+  }
+}
+
+// 버튼 생성 및 초기 표시
+if (words.length > 0) {
+  const numOfLists = Math.ceil(words.length / wordsPerList);
+
+  for (let i = 1; i <= numOfLists; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'list-button';
+    btn.textContent = `List ${i}`;
+    btn.addEventListener('click', () => showListWords(i));
+    buttonsContainer.appendChild(btn);
+  }
+
+  showListWords(1);
+} else {
+  buttonsContainer.innerHTML = '<p>저장된 리스트가 없습니다.</p>';
+  wordListDiv.innerHTML = '';
 }
 
 
-  if (words.length > 0) {
-    const numOfLists = Math.ceil(words.length / wordsPerList);
-
-    for (let i = 1; i <= numOfLists; i++) {
-      const btn = document.createElement('button');
-      btn.className = 'list-button';
-      btn.textContent = `List ${i}`;
-      btn.addEventListener('click', () => showListWords(i));
-      buttonsContainer.appendChild(btn);
-    }
-
-    // 첫 번째 리스트 자동 선택 및 단어 표시
-    showListWords(1);
-  } else {
-    buttonsContainer.innerHTML = '<p>저장된 리스트가 없습니다.</p>';
-    wordListDiv.innerHTML = '';
-  }
 </script>
 
 

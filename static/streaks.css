@@ -304,12 +304,12 @@ main {
 /* 🔢 Streak count box matching h1 */
 .streak-count-box {
   display: inline-block;
-  background-color: #FF5722;
+  background-color: #FFA500;
   color: white;
   font-size: 36px;
   font-weight: bold;
-  padding: 4px 20px;
-  border-radius: 12px;
+  padding: 20px 40px 20px 40px;
+  border-radius: 80px;
   margin-left: 16px;
   vertical-align: middle;
   line-height: 1;

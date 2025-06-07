@@ -278,12 +278,23 @@ def add_streak():
     else:
         return jsonify({"message": "Already exists"}), 200
 
-@app.route('/my-flashcard')
+
+@app.route('/my-flashcard', methods=['GET', 'POST'])
 @login_required
 def my_flashcard():
-    flashcards = Flashcard.query.filter_by(user_id=current_user.id).all()
-    quiz_words = [{"word": f.word, "meaning": f.meaning} for f in flashcards]
-    return render_template('flashcard.html', flashcards=flashcards, quiz_words=quiz_words)
+    if request.method == 'POST':
+        words_json = request.form.get('words_data')
+        if words_json:
+            quiz_words = json.loads(words_json)
+        else:
+            quiz_words = []
+    else:
+        # 기존 처리 (전체 단어 불러오기)
+        flashcards = Flashcard.query.filter_by(user_id=current_user.id).all()
+        quiz_words = [{"word": f.word, "meaning": f.meaning} for f in flashcards]
+
+    return render_template('flashcard.html', quiz_words=quiz_words)
+
 
 
 @app.route('/select')

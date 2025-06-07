@@ -405,6 +405,36 @@ nav a {
   cursor: pointer;
 }
 
+.quiz-go-btn {
+  background-color: black;
+  color: white;
+  border: none;
+  padding: 15px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+}
+.flashcard-go-btn {
+  background-color: black;
+  color: white;
+  border: none;
+  padding: 15px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.flashcard-go-btn:hover {
+  background-color: #FFA500;
+  color: black;
+}
+.quiz-go-btn:hover {
+  background-color: #FFA500;
+  color: black;
+}
+
 .no-words {
   text-align: center;
   font-size: 1.2em;
