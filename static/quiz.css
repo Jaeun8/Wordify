@@ -331,7 +331,6 @@ main {
 
 .quiz-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
   color: white;
@@ -349,6 +348,7 @@ main {
 .progress-badge {
   background-color: #faa21f;
   color: white;
+  margin-left: auto;
   padding: 5px 14px;
   font-weight: 700;
   border-radius: 30px;
@@ -439,7 +439,7 @@ main {
   font-weight: 700;
   border-radius: 30px;
   cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  position: relative;
 }
 
 .unknown-btn:hover {
@@ -447,37 +447,88 @@ main {
   color: black;
 }
 
+#next-btn{
+  margin-top: 25px;
+  background-color: transparent;
+  border: 2px solid #faa21f;
+  color: #faa21f;
+  padding: 10px 28px;
+  font-weight: 700;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  display: none;
+  position: relative;
+}
+
+#next-btn:hover {
+  background-color: #faa21f;
+  color: black;
+}
+
+#answer-feedback {
+  margin-top: 8px;
+  font-weight: bold;
+  height: 1.5em; /* 공간 확보 */
+  color: white; /* 기본색, 필요 시 JS에서 바꿈 */
+}
+
+/*결과*/
+
 #result-area {
-  margin-top: 40px;
+  margin-top: 0px;
   text-align: center;
+  min-height: 400px; /* 최소 높이 지정 */
+  max-height: 800px; /* 최대 높이 지정(선택사항) */
+  overflow-y: auto;  /* 내용이 많으면 세로 스크롤 생김 */
+  padding: 20px;
+  background-color: transparent;
+  border-radius: 8px;
 }
 
 #result-msg {
   font-size: 1.8rem;
   font-weight: 700;
-  color: #2b2f4a;
+  color: white;
   margin-bottom: 12px;
+  margin-top: 10px;
 }
 
 #result-list {
   list-style: none;
   padding: 0;
-  max-width: 600px;
-  margin: 0 auto;
-  text-align: left;
+  margin: 0;
+  width: 100%;
 }
 
 #result-list li {
-  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
   border-bottom: 1px solid #ddd;
-  font-weight: 600;
-  color: #444;
+  line-height:30px;
 }
 
-#result-list li:nth-child(odd) {
-  background-color: #f9f9f9;
+.result-word {
+  font-weight: bold;
+  flex: 1;
 }
 
+.result-meaning {
+  flex: 2;
+}
+
+.result-answer {
+  flex: 1;
+  text-align: right;
+  white-space: nowrap;
+}
+
+
+
+
+
+/*부가적*/
 
 .options {
   display: flex;
@@ -490,13 +541,42 @@ main {
   margin-top: 20px;
 }
 
-#result-area {
-  display: none;
-  margin-top: 40px;
-}
+
 
 #answer-feedback {
   margin-top: 20px;
   font-weight: bold;
   font-size: 1.2em;
 }
+
+.button-group {
+  display: flex;
+  justify-content: flex-end; /* 오른쪽 정렬 */
+  gap: 8px; /* 버튼 사이 간격 */
+  margin-top: 25px;
+}
+
+#save-btn, #redo-btn {
+  background-color: transparent;
+  border: 2px solid #faa21f;
+  color: #faa21f;
+  padding: 10px 28px;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 30px;
+  cursor: pointer;
+  display: inline-block; /* 숨기지 말고 보이게 */
+  position: relative;
+  margin-left: 0; /* flexbox에서 간격 gap으로 조절 */
+}
+
+#save-btn:hover {
+  background-color: #faa21f;
+  color: black;
+}
+
+#redo-btn:hover {
+  background-color: #faa21f;
+  color: black;
+}
+
