@@ -28,11 +28,11 @@
             <span class="dropbtn_icon">menu</span>
           </button>
           <div class="dropdown-content">
-            <form action="{{ url_for('flashcard') }}">
+            <form action="{{ url_for('my_flashcard') }}">
               <button  class="flashcard flashcard-btn">flashcard</button>
             </form>
             <form action="{{ url_for('quiz') }}">
-              <button  class="quiz-go-btn quiz">quiz</button>
+              <button  class="quiz-btn quiz">quiz</button>
             </form>
             <li>
               {% if current_user is defined and current_user.is_authenticated %}
@@ -58,9 +58,10 @@
 
   <div id="card-area" class="card">
     <div class="card-content">
-      <p><strong id="word">단어</strong></p>
-      <p id="meaning">뜻</p>
+      <p><strong id="word">{{ flashcards[0]['word'] if flashcards else '단어' }}</strong></p>
+      <p id="meaning">{{ flashcards[0]['meaning'] if flashcards else '뜻' }}</p>
     </div>
+  </div>
   </div>
 
   <div class="button-group">
@@ -68,56 +69,56 @@
     <button class="next-btn" onclick="loadNextWord()">다음 단어</button>
     <form method="get" action="/select" style="display:inline;">
       <button class="next-btn" type="submit">🎵 새 단어</button>
-    </form>      
+    </form>   
+    <div>
+      <form action="{{ url_for('quiz') }}">
+        <button class="quiz-go-btn">퀴즈보기</button>
+      </form>
+    </div>
+ 
   </div>
+  
 
-  <!-- 퀴즈 보기 버튼 추가 -->
-  <div class="quiz-btn-group">
-    <form action="{{ url_for('quiz') }}">
-      <button class="quiz-btn">퀴즈보기</button>
-    </form>
-  </div>
+  
 
   <script>
-    async function loadNextWord() {
-      try {
-        const res = await fetch('/next-word');
-        const data = await res.json();
+  const flashcards = JSON.parse('{{ quiz_words|tojson|safe }}');
   
-        if (data.done) {
-          document.getElementById('word').textContent = '끝!';
-          document.getElementById('meaning').textContent = '더 이상 단어가 없습니다.';
-          return;
-        }
-  
-        document.getElementById('word').textContent = data.word;
-        document.getElementById('meaning').textContent = data.meaning;
-      } catch (err) {
-        console.error('단어 불러오기 실패:', err);
+    let currentIndex = 0;
+    
+    function showCard(index) {
+      if (index < 0 || index >= flashcards.length) {
+        alert('더 이상 단어가 없습니다.');
+        return;
+      }
+      currentIndex = index;
+      document.getElementById('word').textContent = flashcards[currentIndex].word;
+      document.getElementById('meaning').textContent = flashcards[currentIndex].meaning;
+    }
+    
+    function loadNextWord() {
+      if (currentIndex + 1 < flashcards.length) {
+        showCard(currentIndex + 1);
+      } else {
+        alert('마지막 단어입니다.');
       }
     }
-  
-    async function loadPrevWord() {
-      try {
-        const res = await fetch('/prev-word');
-        const data = await res.json();
-  
-        if (data.done) {
-          alert(data.message || '첫 단어입니다.');
-          return;
-        }
-  
-        document.getElementById('word').textContent = data.word;
-        document.getElementById('meaning').textContent = data.meaning;
-      } catch (err) {
-        console.error('이전 단어 불러오기 실패:', err);
+    
+    function loadPrevWord() {
+      if (currentIndex - 1 >= 0) {
+        showCard(currentIndex - 1);
+      } else {
+        alert('첫 단어입니다.');
       }
     }
-
-  
-    window.onload = loadNextWord;
+    
+    window.onload = () => {
+      if (flashcards.length > 0) {
+        showCard(0);
+      } else {
+        document.getElementById('word').textContent = '단어 없음';
+        document.getElementById('meaning').textContent = '단어 리스트가 비어있습니다.';
+      }
+    };
   </script>
   
-
-</body>
-</html>
