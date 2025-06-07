@@ -68,6 +68,12 @@ body {
   justify-content: center;
   gap: 20px;
 }
+.button-group2 {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
 
 .prev-btn, .next-btn {
   background-color: #1a1a1a;
@@ -104,6 +110,49 @@ cursor: pointer;
 background-color: #fce6cf;
 color:black;
 }
+
+.list-btn {
+  padding: 10px 20px;
+  background-color: transparent;
+  border: 2px solid black;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+}
+
+.list-btn:hover {
+  padding: 10px 20px;
+  background-color: #faa21f;
+  border: 2px solid black;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+}
+
+.list-go-btn{
+  background-color: #faa21f;
+  color: black;
+  border: none;
+  border-radius: 20px;
+  padding: 15px 30px;
+  font-size: 18px;
+  font-style: bold;
+  cursor: pointer;
+  border-radius: 10px;
+  cursor: pointer;
+  }
+  .list-go-btn:hover {
+  background-color: #fce6cf;
+  color:black;
+  }
 
 
 /*header*/

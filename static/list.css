@@ -342,267 +342,83 @@ nav a {
   transition: background-color 0.3s;
 
 }
+ /*main */
 
-/*main */
-
-main {
-  max-width: 1000px;
-  margin: 40px auto 0;
-  background-color: #1a1a1a;
-  padding: 30px 40px;
-  border-radius: 20px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-  height: 750px;
-}
-
-.quiz-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-  color: white;
+ h1{
+  text-align: center;
+  margin-top: 50px;
+  font-size: 50px;
+  color: #333;
+ }
   
+ .list-buttons-container {
+  display: grid;
+  gap: 20px;
+  padding: 20px;
+  max-width: 300px;
+  margin: 0 auto;
+  margin-left: 40px;
 }
 
-.quiz-header h1 {
-  margin: 0;
-  font-weight: 700;
-  font-size: 2rem;
-  color: white;
-
-}
-
-.progress-badge {
-  background-color: #faa21f;
-  color: white;
-  margin-left: auto;
-  padding: 5px 14px;
-  font-weight: 700;
-  border-radius: 30px;
-  font-size: 0.9rem;
-  user-select: none;
-}
-
-.quiz-header button {
-  background-color: #2b2f4a;
-  color: rgb(255, 255, 255);
+.list-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
   border: none;
-  padding: 7px 15px;
-  border-radius: 5px;
-  font-weight: 600;
+  background-color: #000000;
   cursor: pointer;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  text-align: center;
+  text-align: left;
+  font-size: 1em;
+  border-radius: 5px;
   transition: background-color 0.3s ease;
 }
 
-.quiz-header button:hover {
-  background-color: #faa21f;
+.list-button:hover {
+  background-color: #545353;
 }
 
-.instruction {
-  font-size: 1.2rem;
-  margin-bottom: 25px;
-  font-weight: 600;
+.list-button.active {
+  background-color: #FFA500;
+  color: black;
+  font-weight: bold;
+}
+
+
+.delete-section {
+  text-align: center;
+  margin-bottom: 15px;
+
+  
+}
+
+.delete-btn {
+  background-color: #faa21f;
   color: white;
-}
-
-.quiz-area-horizontal {
-  display: flex;
-  flex-direction: column; /* 가로에서 세로로 변경 */
-  align-items: center;    /* 가운데 정렬 */
-  gap: 15px;              /* 간격 조정 */
-}
-
-
-.word-box {
-  min-width: 180px;
-  padding: 20px 15px;
-  border: 2px solid #2b2f4a;
-  border-radius: 10px;
-  font-size: 1.6rem;
-  font-weight: 700;
-  text-align: center;
-  background-color: #f5dba8;
-  user-select: none;
-  color: black;
-  text-align: center;
-  display: flex;
-  justify-content: center;
-}
-
-.options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  max-width: 600px;
-  justify-content: flex-start;
-}
-
-.option {
-  background-color: #f0f4f8;
-  border: 2px solid #2b2f4a;
-  border-radius: 8px;
-  padding: 12px 22px;
-  font-weight: 600;
-  font-size: 1rem;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-  user-select: none;
-  flex: 1 1 40%;
+}
+
+.no-words {
   text-align: center;
-}
-
-.option:hover {
-  background-color: #faa21f;
-  color: black;
-  border-color: #faa21f;
-}
-
-.unknown-btn {
-  margin-top: 25px;
-  background-color: transparent;
-  border: 2px solid #faa21f;
-  color: #faa21f;
-  padding: 10px 28px;
-  font-weight: 700;
-  border-radius: 30px;
-  cursor: pointer;
-  position: relative;
-}
-
-.unknown-btn:hover {
-  background-color: #faa21f;
-  color: black;
-}
-
-#next-btn{
-  margin-top: 25px;
-  background-color: transparent;
-  border: 2px solid #faa21f;
-  color: #faa21f;
-  padding: 10px 28px;
-  font-weight: 700;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  display: none;
-  position: relative;
-}
-
-#next-btn:hover {
-  background-color: #faa21f;
-  color: black;
-}
-
-#answer-feedback {
-  margin-top: 8px;
-  font-weight: bold;
-  height: 1.5em; /* 공간 확보 */
-  color: white; /* 기본색, 필요 시 JS에서 바꿈 */
-}
-
-/*결과*/
-
-#result-area {
-  margin-top: 0px;
-  text-align: center;
-  min-height: 400px; /* 최소 높이 지정 */
-  max-height: 800px; /* 최대 높이 지정(선택사항) */
-  overflow-y: auto;  /* 내용이 많으면 세로 스크롤 생김 */
-  padding: 20px;
-  background-color: transparent;
-  border-radius: 8px;
-}
-
-#result-msg {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: white;
-  margin-bottom: 12px;
-  margin-top: 10px;
-}
-
-#result-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  width: 100%;
-}
-
-#result-list li {
-  display: flex;
-  justify-content: space-between;
-  padding: 4px 0;
-  border-bottom: 1px solid #ddd;
-  line-height:30px;
-}
-
-.result-word {
-  font-weight: bold;
-  flex: 1;
-}
-
-.result-meaning {
-  flex: 2;
-}
-
-.result-answer {
-  flex: 1;
-  text-align: right;
-  white-space: nowrap;
-}
-
-
-
-
-
-/*부가적*/
-
-.options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  max-width: 600px;
-}
-
-.unknown-btn {
-  margin-top: 20px;
-}
-
-
-
-#answer-feedback {
-  margin-top: 20px;
-  font-weight: bold;
   font-size: 1.2em;
+  color: #777;
+  margin-top: 50px;
 }
 
-.button-group {
-  display: flex;
-  justify-content: flex-end; /* 오른쪽 정렬 */
-  gap: 8px; /* 버튼 사이 간격 */
-  margin-top: 25px;
-}
-
-#save-btn, #redo-btn {
-  background-color: transparent;
-  border: 2px solid #faa21f;
-  color: #faa21f;
-  padding: 10px 28px;
-  font-size: 15px;
-  font-weight: 700;
-  border-radius: 30px;
-  cursor: pointer;
-  display: inline-block; /* 숨기지 말고 보이게 */
-  position: relative;
-  margin-left: 0; /* flexbox에서 간격 gap으로 조절 */
-}
-
-#save-btn:hover {
-  background-color: #faa21f;
+#word-list {
+  list-style: none;
+  padding: 10px;
   color: black;
-}
-
-#redo-btn:hover {
-  background-color: #faa21f;
-  color: black;
+  border-radius: 10px;  
+  margin: 0;
+  font-size: 20px;
+  line-height: 30px;
 }
 

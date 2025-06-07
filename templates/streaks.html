@@ -35,6 +35,9 @@
               <form action="{{ url_for('quiz') }}">
                 <button  class="quiz-btn quiz">quiz</button>
               </form>
+              <form action="{{ url_for('list') }}">
+                <button  class="list-btn ">my lists</button>
+              </form>
               <li>
                 {% if current_user is defined and current_user.is_authenticated %}
                 <form action="{{ url_for('logout') }}">

@@ -34,6 +34,9 @@
             <form action="{{ url_for('quiz') }}">
               <button  class="quiz-btn quiz">quiz</button>
             </form>
+            <form action="{{ url_for('word_list') }}">
+              <button  class="list-btn ">my lists</button>
+            </form>
             <li>
               {% if current_user is defined and current_user.is_authenticated %}
               <form action="{{ url_for('logout') }}">
@@ -69,13 +72,21 @@
     <button class="next-btn" onclick="loadNextWord()">다음 단어</button>
     <form method="get" action="/select" style="display:inline;">
       <button class="next-btn" type="submit">🎵 새 단어</button>
-    </form>   
-    <div>
-      <form action="{{ url_for('quiz') }}">
-        <button class="quiz-go-btn">퀴즈보기</button>
-      </form>
-    </div>
- 
+    </form>       
+  </div>
+  <div class="button-group2">
+  <div>
+    <form action="{{ url_for('quiz') }}">
+      <button class="quiz-go-btn">퀴즈보기</button>
+    </form>
+  </div>
+  <div>
+    <form id="save-form" method="post" action="{{ url_for('save_list') }}">
+      <input type="hidden" name="words_json" id="words_json">
+      <button class="list-go-btn" type="submit">단어장에 저장하기</button>
+    </form>
+    
+  </div>
   </div>
   
 
@@ -120,5 +131,14 @@
         document.getElementById('meaning').textContent = '단어 리스트가 비어있습니다.';
       }
     };
+
+    const form = document.getElementById('save-form');
+  const hiddenInput = document.getElementById('words_json');
+  form.addEventListener('submit', function (e) {
+    const jsonData = JSON.stringify(flashcards);
+    hiddenInput.value = jsonData;
+  });
   </script>
+  </body>
+</html>
   

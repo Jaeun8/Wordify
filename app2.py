@@ -8,6 +8,12 @@ import requests
 import spacy
 import os
 import random
+from datetime import datetime
+import json
+from flask import flash
+
+
+
 
 try:
     import en_core_web_sm
@@ -30,6 +36,7 @@ if not os.path.exists(INSTANCE_FOLDER):
 DB_PATH = os.path.join(INSTANCE_FOLDER, 'db.sqlite')
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_PATH}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 
 db = SQLAlchemy(app)
 login_manager = LoginManager()
@@ -56,12 +63,23 @@ class Flashcard(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     word = db.Column(db.String(100))
     meaning = db.Column(db.String(200))
+class Word(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    word = db.Column(db.String(100), nullable=False)
+    meaning = db.Column(db.String(200), nullable=False)
+    user_id = db.Column(db.Integer, nullable=True)  # 로그인 시스템 연동 시 필요
+    saved_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+class WordList(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=False)
+    word = db.Column(db.String(100), nullable=False)
+    meaning = db.Column(db.String(200), nullable=False)
 
 # --------- iTunes API 관련 함수 --------------
 
@@ -144,6 +162,7 @@ def get_words_meanings(lyrics, count=10):
         meaning = get_definition(w.lower())
         result.append({'word': w, 'meaning': meaning})
     return result
+
 
 
 # ---------------- Routes ----------------
@@ -274,12 +293,26 @@ def select_song():
     if not track_data:
         return redirect(url_for('home'))
 
-    flashcards = get_words_meanings(lyrics, count=10)
-    session['flashcards'] = flashcards
-    session['flashcard_index'] = 0
-    session['quiz_words'] = flashcards
+    # 많은 단어를 받아옴 (예: 50개)
+    flashcards = get_words_meanings(lyrics, count=50)
 
-    return render_template('flashcard.html', flashcards=flashcards, quiz_words=flashcards)
+    # '정의를 찾을 수 없음'인 단어는 제외
+    filtered_flashcards = [f for f in flashcards if f['meaning'].strip() != "정의를 찾을 수 없음"]
+
+    # 의미 있는 단어가 10개 이상 있으면 10개만 선택
+    if len(filtered_flashcards) >= 10:
+        selected_flashcards = filtered_flashcards[:10]
+    else:
+        # 10개가 안 되면 그냥 있는 것만 넘김 (없으면 없는 대로)
+        selected_flashcards = filtered_flashcards
+
+    session['flashcards'] = selected_flashcards
+    session['flashcard_index'] = 0
+    session['quiz_words'] = selected_flashcards
+
+    return render_template('flashcard.html', flashcards=selected_flashcards, quiz_words=selected_flashcards)
+
+
 
 
 @app.route('/flashcard/save', methods=['POST'])
@@ -315,8 +348,67 @@ def next_track():
 
 @app.route('/quiz')
 def quiz():
-    quiz_words = session.get('quiz_words', [])
+    all_words = session.get('quiz_words', [])  # session에서 전체 단어 리스트 가져오기
+
+    # '정의를 찾을 수 없음' 단어 제외
+    filtered_words = [w for w in all_words if w['meaning'] != "정의를 찾을 수 없음"]
+
+    # 만약 필터링 후 단어가 없으면 빈 리스트 처리
+    if not filtered_words:
+        quiz_words = []
+    else:
+        import random
+        # 최대 5개 랜덤 선택
+        quiz_words = random.sample(filtered_words, min(5, len(filtered_words)))
+
     return render_template('quiz.html', quiz_words=quiz_words)
+
+@app.route('/word_list')
+@login_required
+def word_list():
+    # 현재 로그인한 사용자의 단어만 가져오기
+    word_list = Word.query.filter_by(user_id=current_user.id).all()
+
+    # Word 객체를 dict 리스트로 변환
+    word_list_data = [{"word": w.word, "meaning": w.meaning} for w in word_list]
+
+    return render_template('list.html', word_list=word_list_data)
+
+
+    
+
+@app.route('/save-list', methods=['POST'])
+def save_list():
+    words_json = request.form.get('words_json')
+    if not words_json:
+        return 'No data provided', 400
+
+    try:
+        words = json.loads(words_json)
+        for item in words:
+            new_word = Word(
+                word=item.get('word'),
+                meaning=item.get('meaning'),
+                user_id=current_user.id if current_user.is_authenticated else None
+            )
+            db.session.add(new_word)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return f"Error saving words: {e}", 500
+
+    return redirect(url_for('word_list'))
+
+@app.route('/delete_all', methods=['POST'])
+@login_required
+def delete_all_words():
+    user_id = current_user.id
+    Word.query.filter_by(user_id=user_id).delete()
+    db.session.commit()
+    flash("전체 단어 리스트가 삭제되었습니다.")
+    return redirect(url_for('word_list'))
+
+
 
 
 if __name__ == '__main__':
