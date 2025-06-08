@@ -11,6 +11,7 @@ import random
 from datetime import datetime
 import json
 from flask import flash
+from datetime import timedelta
 
 
 
@@ -256,8 +257,29 @@ def streaks_page():
 @app.route('/api/streaks/<username>', methods=['GET'])
 @login_required
 def get_streaks(username):
-    streaks = Streak.query.filter_by(username=username).all()
-    return jsonify([s.date.isoformat() for s in streaks])
+    # 날짜 기준으로 내림차순 정렬 (최근 기록부터)
+    streaks = Streak.query.filter_by(username=username).order_by(Streak.date.desc()).all()
+    dates = [s.date for s in streaks]
+
+    # 현재 연속 streak 계산
+    today = date.today()
+    current_streak = 0
+    expected_day = today
+
+    for d in dates:
+        if d == expected_day:
+            current_streak += 1
+            expected_day -= timedelta(days=1)
+        elif (expected_day - d).days == 1:
+            # 하루 차이로 연속이 끊김
+            break
+        else:
+            break
+
+    return jsonify({
+        "dates": [d.isoformat() for d in dates],
+        "current_streak": current_streak
+    })
 
 @app.route('/api/streaks/add', methods=['POST'])
 @login_required

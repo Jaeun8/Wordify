@@ -89,14 +89,15 @@
           try {
             const res = await fetch(`/api/streaks/${username}`);
             const data = await res.json();
-            const events = data.map(date => ({
+
+            const events = data.dates.map(date => ({
               start: date,
               allDay: true,
               classNames: ['fire-streak']
             }));
 
-            // ✅ Set streak count in badge
-            document.getElementById("streak-count").textContent = `${events.length}`;
+            // ✅ 현재 streak 수 출력
+            document.getElementById("streak-count").textContent = `${data.current_streak}`;
 
             successCallback(events);
           } catch (err) {
