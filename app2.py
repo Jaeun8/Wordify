@@ -85,30 +85,41 @@ def search_itunes_tracks(artist, limit=10):
     return response.json().get('results', []) if response.status_code == 200 else []
 
 def get_lyrics_genius(artist, title):
+    """
+    Genius API를 이용해 가사를 가져오고, 영어 가사만 반환합니다.
+    """
     try:
         song = genius.search_song(title, artist)
-        if song and song.lyrics:
-            lyrics = song.lyrics
+        if not song or not song.lyrics:
+            print(f"[Genius] '{artist} - {title}' 가사 없음")
+            return None
 
-            # 1. "Lyrics\n" 이후부터 시작 (있으면)
-            if "Lyrics\n" in lyrics:
-                lyrics = lyrics.split("Lyrics\n", 1)[-1]
+        lyrics = song.lyrics
 
-            # 2. [Intro:], [Verse:], [Chorus:] 등 가사 파트 태그 찾기
-            match = re.search(r"(\[.*?\])", lyrics)
-            if match:
-                lyrics = lyrics[match.start():]
+        # 영어 가사만 남기기 (한글/스페인어 등 비영어 알파벳이 30% 이상이면 제외)
+        english_lines = [line for line in lyrics.split('\n') if re.match(r'^[\[\]A-Za-z0-9\s\,\.\'\"\!\?\-\(\)\:]+$', line) or line.strip() == '']
+        english_ratio = len(english_lines) / (len(lyrics.split('\n')) + 1e-5)
+        if english_ratio < 0.5:
+            print(f"[Genius] 영어 가사 비율이 낮음, 다른 언어일 가능성 높음")
+            return None
 
-            # 3. "You might also like", "Embed" 등 이후 내용 제거
-            for key in ["You might also like", "Embed"]:
-                if key in lyrics:
-                    lyrics = lyrics.split(key, 1)[0]
+        lyrics = '\n'.join(english_lines)
 
-            # 4. 앞뒤 공백 제거
-            return lyrics.strip()
+        # 기존 전처리 유지
+        if "Lyrics\n" in lyrics:
+            lyrics = lyrics.split("Lyrics\n", 1)[-1]
+        match = re.search(r"(\[.*?\])", lyrics)
+        if match:
+            lyrics = lyrics[match.start():]
+        for key in ["You might also like", "Embed", "More on Genius"]:
+            if key in lyrics:
+                lyrics = lyrics.split(key, 1)[0]
+        lyrics = re.sub(r'\d+Embed', '', lyrics)
+        lyrics = re.sub(r'\n{2,}', '\n\n', lyrics)
+        return lyrics.strip()
     except Exception as e:
-        print(f"Genius 가사 오류: {e}")
-    return None
+        print(f"[Genius] 가사 오류: {e}")
+        return None
 
 def get_track_with_lyrics():
     pop_artists = [
