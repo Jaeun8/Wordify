@@ -98,6 +98,23 @@
     let score = 0;
     let swap = false;
     let results = [];
+    let skippedIndices = new Set();
+
+    const perfectMessages = [
+      'Great job! Amazing work! 완벽해요 ✨',
+      'All correct! You nailed it 💯',
+      'Perfect score! 천재인가요? 😎',
+      '완벽합니다! Excellent memory!',
+      'Flawless! Word master 🧠🔥'
+    ];
+
+    const improvementMessages = [
+      "Keep it up! You're getting better! 잘하고있어요 🙌",
+      "You're on the right track! 다음엔 더 잘할 수 있어요 💪",
+      "조금만 더! Good effort!",
+      "Practice makes perfect 😉",
+      "Great try! Keep learning 📚"
+    ];
 
     function shuffle(array) {
       for (let i = array.length - 1; i > 0; i--) {
@@ -115,10 +132,9 @@
     }
 
     function updateProgress() {
-    const progressPercent = Math.round((current / flashcards.length) * 100);
-    document.getElementById('score').textContent = progressPercent;
+      const progressPercent = Math.round((skippedIndices.size / flashcards.length) * 100);
+      document.getElementById('score').textContent = progressPercent;
     }
-
 
     function showQuiz() {
       const item = flashcards[current];
@@ -153,144 +169,147 @@
       document.getElementById('save-btn').style.display = 'none';
       document.getElementById('redo-btn').style.display = 'none';
 
-
-
       updateProgress();
-
     }
 
-  function nextQuiz(correct, chosen = '') {
-  const feedback = document.getElementById('answer-feedback');
-  const currentItem = flashcards[current];
+    function nextQuiz(correct, chosen = '') {
+      const feedback = document.getElementById('answer-feedback');
+      const currentItem = flashcards[current];
 
-  if (correct) {
-    score++;
-    feedback.style.color = '#5DE955';
-    feedback.textContent = '정답입니다!';
+      skippedIndices.add(current);
 
-    results.push({
-      word: currentItem.word,
-      meaning: currentItem.meaning,
-      correct,
-      userAnswer: chosen
-    });
+      if (correct) {
+        score++;
+        feedback.style.color = '#5DE955';
+        feedback.textContent = '정답입니다!';
+      } else {
+        const answer = swap ? currentItem.word : currentItem.meaning;
+        feedback.style.color = 'red';
+        feedback.textContent = `틀렸어요! 정답은 "${answer}" 입니다.`;
+        document.getElementById('next-btn').style.display = 'inline-block';
+        document.querySelector('.unknown-btn').style.display = 'none';
+      }
 
-    current++;
-    setTimeout(() => {
-      feedback.textContent = '';
+      results.push({
+        word: currentItem.word,
+        meaning: currentItem.meaning,
+        correct,
+        userAnswer: chosen
+      });
+
+      setTimeout(() => {
+        if (correct) {
+          feedback.textContent = '';
+          goToNext();
+        }
+      }, 700);
+    }
+
+    function goToNext() {
+      let nextIndex = current + 1;
+      while (skippedIndices.has(nextIndex) && nextIndex < flashcards.length) {
+        nextIndex++;
+      }
+      current = nextIndex;
+
+      document.getElementById('answer-feedback').textContent = '';
+      document.getElementById('next-btn').style.display = 'none';
+      document.querySelector('.unknown-btn').style.display = 'inline-block';
+
       if (current < flashcards.length) {
         showQuiz();
       } else {
         showResult();
       }
-    }, 700);
-  } else {
-    const answer = swap ? currentItem.word : currentItem.meaning;
-    feedback.style.color = 'red';
-    feedback.textContent = `틀렸어요! 정답은 "${answer}" 입니다.`;
+    }
 
-    results.push({
-      word: currentItem.word,
-      meaning: currentItem.meaning,
-      correct,
-      userAnswer: chosen
-    });
+    function showAnswer() {
+      const feedback = document.getElementById('answer-feedback');
+      const answer = swap ? flashcards[current].word : flashcards[current].meaning;
+      feedback.style.color = 'white';
+      feedback.textContent = `정답은 "${answer}" 입니다.`;
 
-    // 틀렸을 때만 "다음 문제" 버튼 보이기
-    document.getElementById('next-btn').style.display = 'inline-block';
+      skippedIndices.add(current);
 
-    // 모르겠어요 버튼 숨기기
-    document.querySelector('.unknown-btn').style.display = 'none';
-  }
-}
+      results.push({
+        word: flashcards[current].word,
+        meaning: flashcards[current].meaning,
+        correct: false,
+        userAnswer: '(모르겠어요)'
+      });
 
-function goToNext() {
-  current++;
-  document.getElementById('answer-feedback').textContent = '';
-  document.getElementById('next-btn').style.display = 'none';
-  document.querySelector('.unknown-btn').style.display = 'inline-block';
+      document.getElementById('next-btn').style.display = 'inline-block';
+      document.querySelector('.unknown-btn').style.display = 'none';
+    }
 
-  if (current < flashcards.length) {
-    showQuiz();
-  } else {
-    showResult();
-  }
-}
+    function showResult() {
+      document.getElementById('quiz-question').style.display = 'none';
+      document.getElementById('quiz-options').style.display = 'none';
+      document.querySelector('.instruction').style.display = 'none';
+      document.querySelector('.unknown-btn').style.display = 'none';
+      document.querySelector('.progress-badge').style.display = 'none';
+      document.getElementById('next-btn').style.display = 'none';
+      document.getElementById('answer-feedback').textContent = '';
+      document.getElementById('save-btn').style.display = 'inline-block';
+      document.getElementById('redo-btn').style.display = 'inline-block';
 
-function showResult() {
-  document.getElementById('quiz-question').style.display = 'none';
-  document.getElementById('quiz-options').style.display = 'none';
-  document.querySelector('.instruction').style.display = 'none';
-  document.querySelector('.unknown-btn').style.display = 'none';
-  document.querySelector('.progress-badge').style.display = 'none';
-  document.getElementById('next-btn').style.display = 'none';
-  document.getElementById('answer-feedback').textContent = '';
-  document.getElementById('save-btn').style.display = 'inline-block';
-  document.getElementById('redo-btn').style.display = 'inline-block';
+      const percent = Math.round((score / flashcards.length) * 100);
+      document.getElementById('score').textContent = percent;
+      document.getElementById('final-score').textContent = percent;
 
+      const msg = percent === 100
+        ? perfectMessages[Math.floor(Math.random() * perfectMessages.length)]
+        : improvementMessages[Math.floor(Math.random() * improvementMessages.length)];
+      document.getElementById('result-msg').textContent = msg;
 
+      const ul = document.getElementById('result-list');
+      ul.innerHTML = '';
 
-  const percent = Math.round((score / flashcards.length) * 100);
-  document.getElementById('score').textContent = percent;
-  document.getElementById('final-score').textContent = percent;
+      const correctGroup = document.createElement('div');
+      const wrongGroup = document.createElement('div');
 
-  const msg =
-    percent === 100
-      ? 'Great job! Amazing work! 완벽해요 ✨'
-      : "Keep it up! You're getting better! 잘하고있어요 🙌 ";
-  document.getElementById('result-msg').textContent = msg;
+      const correctTitle = document.createElement('h3');
+      correctTitle.textContent = '✔️ 맞은 문제';
+      correctGroup.appendChild(correctTitle);
 
-  const ul = document.getElementById('result-list');
-  ul.innerHTML = '';
-  results.forEach(r => {
-  const li = document.createElement('li');
+      const wrongTitle = document.createElement('h3');
+      wrongTitle.textContent = '❌ 틀린 문제';
+      wrongGroup.appendChild(wrongTitle);
 
-  const wordSpan = document.createElement('span');
-  wordSpan.className = 'result-word';
-  wordSpan.textContent = r.word;
+      results.forEach(r => {
+        const li = document.createElement('li');
 
-  const meaningSpan = document.createElement('span');
-  meaningSpan.className = 'result-meaning';
-  meaningSpan.textContent = r.meaning;
+        const wordSpan = document.createElement('span');
+        wordSpan.className = 'result-word';
+        wordSpan.textContent = r.word;
 
-  const answerSpan = document.createElement('span');
-  answerSpan.className = 'result-answer';
-  answerSpan.textContent = r.correct
-    ? 'O'
-    : 'X (나의 답: ' + r.userAnswer + ')';
+        const meaningSpan = document.createElement('span');
+        meaningSpan.className = 'result-meaning';
+        meaningSpan.textContent = r.meaning;
 
-  li.appendChild(wordSpan);
-  li.appendChild(meaningSpan);
-  li.appendChild(answerSpan);
+        const answerSpan = document.createElement('span');
+        answerSpan.className = 'result-answer';
+        answerSpan.textContent = r.correct
+          ? 'O'
+          : 'X (나의 답: ' + r.userAnswer + ')';
 
-  document.getElementById('result-list').appendChild(li);
-});
+        li.appendChild(wordSpan);
+        li.appendChild(meaningSpan);
+        li.appendChild(answerSpan);
 
-  document.getElementById('result-area').style.display = 'block';
-}
+        if (r.correct) {
+          correctGroup.appendChild(li);
+        } else {
+          wrongGroup.appendChild(li);
+        }
+      });
 
-// 모르겠어요 버튼 클릭 시 정답 보여주기 + 다음 버튼 보이기
-  function showAnswer() {
-  const feedback = document.getElementById('answer-feedback');
-  const answer = swap ? flashcards[current].word : flashcards[current].meaning;
-  feedback.style.color = 'white';
-  feedback.textContent = `정답은 "${answer}" 입니다.`;
+      ul.appendChild(correctGroup);
+      ul.appendChild(wrongGroup);
+      document.getElementById('result-area').style.display = 'block';
+    }
 
-  results.push({
-    word: flashcards[current].word,
-    meaning: flashcards[current].meaning,
-    correct: false,
-    userAnswer: '(모르겠어요)'
-  });
-
-  // 다음 문제 버튼 보이기
-  document.getElementById('next-btn').style.display = 'inline-block';
-
-  // 모르겠어요 버튼 숨기기
-  document.querySelector('.unknown-btn').style.display = 'none';
-}
-
-window.onload = showQuiz;
+    window.onload = showQuiz;
   </script>
 </body>
 </html>
