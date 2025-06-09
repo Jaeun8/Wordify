@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>playlist</title>
+  <link rel="stylesheet" href="../static/music.css" />
+</head>
+<body>
+
+<header>
+
+  <form action="{{ url_for('home') }}">
+    <button class="logo" type="submit">WORD<span>IFY</span></button>
+  </form>
+  
+  <nav>
+    <ul>
+      <li>
+        <form action="{{ url_for('streaks_page') }}">
+          <button class="nav-btn streaks">Streaks</button>
+        </form>
+      </li>
+      <li>
+        <form action="{{ url_for('playlist') }}">
+          <button class="nav-btn streaks">Musics</button>
+        </form>
+      </li>
+      
+      <li>
+        <div class="dropdown">
+          <button class="dropbtn"> 
+            <span class="dropbtn_icon">menu</span>
+          </button>
+          <div class="dropdown-content">
+            <form action="{{ url_for('my_flashcard') }}">
+              <button  class="flashcard flashcard-btn">flashcard</button>
+            </form>
+            <form action="{{ url_for('quiz') }}">
+              <button  class="quiz-btn quiz">quiz</button>
+            </form>
+            <form action="{{ url_for('word_list') }}">
+              <button  class="list-btn ">my lists</button>
+            </form>
+            <li>
+              {% if current_user is defined and current_user.is_authenticated %}
+              <form action="{{ url_for('logout') }}">
+                  <button class="nav-btn">Logout</button>
+              </form>
+              {% else %}
+              <form action="{{ url_for('login') }}">
+                <button class="nav-btn">Login/Signup</button>
+              </form>
+              {% endif %}
+            </li>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+  </nav>
+</header>
+<main>
+    <section class="playlist">
+        <h2>🎵 오늘의 추천 노래</h2>
+        <ul class="music-list">
+          {% for track in tracks %}
+          <li class="music-item">
+            <img src="{{ track.album_cover }}" alt="앨범 커버" class="album-cover">
+            <div class="music-info">
+              <h3>{{ track.name }}</h3>
+              <p>{{ track.artist }}</p>
+              <a href="{{ track.external_url }}" target="_blank">iTunes에서 보기</a>
+      
+              <details class="lyrics-box">
+                <summary>🎤 가사 보기</summary>
+                <pre>{{ track.lyrics }}</pre>
+              </details>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </section>
+      
+      
+</main>
+
+
+<script>
+</script>
+</body>
+</html>
+  
