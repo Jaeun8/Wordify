@@ -74,8 +74,8 @@
             <div class="music-info">
               <h3>{{ track.name }}</h3>
               <p>{{ track.artist }}</p>  
-              <form action="{{ url_for('select_song') }}" method="get">
-                <button class="make-flashcard-btn" type="submit">선택하기</button>
+              <form action="{{ url_for('word_list') }}" >
+                <button class="select-song-btn" type="submit">선택하기</button>
             </form>
               <!-- <button class="make-flashcard-btn" data-lyrics="{{ track.lyrics | e }}">Flashcard 만들기</button>     -->
               <details class="lyrics-box">
@@ -123,37 +123,6 @@
         });
       });
     
-      // 이벤트 위임으로 Flashcard 버튼 클릭 처리
-  //     document.addEventListener('DOMContentLoaded', function () {
-  // document.addEventListener('click', async function (event) {
-  //   if (event.target && event.target.classList.contains('make-flashcard-btn')) {
-  //     const button = event.target;
-  //     const lyrics = button.getAttribute('data-lyrics');
-
-  //     const stopwords = ['i', 'you', 'the', 'and', 'a', 'of', 'to', 'in', 'my', 'is', 'on', 'it', 'that', 'me', 'for', 'your', 'we', 'are', 'was', 'with', 'at', 'be', 'this', 'so', 'all', 'but'];
-
-  //     const words = lyrics
-  //       .toLowerCase()
-  //       .replace(/[^\w\s]/g, '')
-  //       .split(/\s+/)
-  //       .filter(w => w.length > 2 && !stopwords.includes(w));
-
-  //     const uniqueWords = [...new Set(words)];
-  //     const selected = uniqueWords.sort(() => 0.5 - Math.random()).slice(0, 10);
-  //     const wordsData = selected.map(word => ({ word: word, meaning: "" }));
-
-  //     const formData = new FormData();
-  //     formData.append('words_data', JSON.stringify(wordsData));
-
-  //     const response = await fetch('/my-flashcard', {
-  //       method: 'POST',
-  //       body: formData,
-  //     });
-
-  //     if (response.redirected) {
-  //       window.location.href = response.url;
-  //     }
-  //   }
     });
     </script>    
 </body>
