@@ -12,9 +12,10 @@
 <body>
   <header>
 
-    <form action="{{ url_for('home') }}">
-      <button class="logo" type="submit">WORD<span>IFY</span></button>
-    </form>
+      <form action="{{ url_for('home') }}">
+        <button class="logo" type="submit">WORD<span>IFY</span></button>
+      </form>
+     
     <nav>
       <ul>
         <li>
@@ -40,7 +41,7 @@
               <form action="{{ url_for('quiz') }}">
                 <button  class="quiz-btn quiz">quiz</button>
               </form>
-              <form action="{{ url_for('word_list') }}">
+              <form action="{{ url_for('quiz') }}">
                 <button  class="list-btn ">my lists</button>
               </form>
               <li>
@@ -58,9 +59,8 @@
           </div>
         </li>
       </ul>
-
     </nav>
-</header>
+  </header>
 
   <main>
     <h1 class="page-title">

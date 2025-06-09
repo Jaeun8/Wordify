@@ -8,10 +8,11 @@
 </head>
 <body>
   <header>
-    <form action="{{ url_for('home') }}">
-      <button class="logo" type="submit">WORD<span>IFY</span></button>
-    </form>
-   
+
+      <form action="{{ url_for('home') }}">
+        <button class="logo" type="submit">WORD<span>IFY</span></button>
+      </form>
+     
     <nav>
       <ul>
         <li>
@@ -21,7 +22,7 @@
         </li>
         <li>
           <form action="{{ url_for('playlist') }}">
-            <button class="nav-btn streaks">Playlisyt</button>
+            <button class="nav-btn streaks">Playlist</button>
           </form>
         </li>
         
@@ -32,18 +33,18 @@
             </button>
             <div class="dropdown-content">
               <form action="{{ url_for('my_flashcard') }}">
-                <button class="flashcard flashcard-btn">flashcard</button>
+                <button  class="flashcard flashcard-btn">flashcard</button>
               </form>
               <form action="{{ url_for('quiz') }}">
-                <button class="quiz-btn quiz">quiz</button>
+                <button  class="quiz-btn quiz">quiz</button>
               </form>
-              <form action="{{ url_for('word_list') }}">
+              <form action="{{ url_for('quiz') }}">
                 <button  class="list-btn ">my lists</button>
               </form>
               <li>
                 {% if current_user is defined and current_user.is_authenticated %}
                 <form action="{{ url_for('logout') }}">
-                  <button class="nav-btn">Logout</button>
+                    <button class="nav-btn">Logout</button>
                 </form>
                 {% else %}
                 <form action="{{ url_for('login') }}">
