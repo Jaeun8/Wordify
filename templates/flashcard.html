@@ -47,6 +47,8 @@
               <button class="nav-btn streaks">Playlist</button>
             </form>
           </li>
+
+          <!-- Menu 버튼 -->
           <li>
             <div class="dropdown">
               <button class="dropbtn">
@@ -62,17 +64,21 @@
                 <form action="{{ url_for('word_list') }}">
                   <button class="list-btn">my lists</button>
                 </form>
-                {% if current_user is defined and current_user.is_authenticated %}
-                <form action="{{ url_for('logout') }}">
-                  <button class="nav-btn">Logout</button>
-                </form>
-                {% else %}
-                <form action="{{ url_for('login') }}">
-                  <button class="nav-btn">Login/Signup</button>
-                </form>
-                {% endif %}
               </div>
             </div>
+          </li>
+
+          <!-- 항상 보이는 로그인/로그아웃 버튼 -->
+          <li>
+            {% if current_user.is_authenticated %}
+            <form action="{{ url_for('logout') }}">
+              <button class="nav-btn">Logout</button>
+            </form>
+            {% else %}
+            <form action="{{ url_for('login') }}">
+              <button class="nav-btn">Login/Signup</button>
+            </form>
+            {% endif %}
           </li>
         </ul>
       </nav>
