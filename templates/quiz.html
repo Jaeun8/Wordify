@@ -128,16 +128,8 @@
       }
     }
 
-    function toggleSwap() {
-      swap = !swap;
-      document.getElementById('instruction').textContent = swap
-        ? '다음 단어 중 제시된 정의와 맞는 것을 고르시오'
-        : '다음 정의 중 제시된 단어와 맞는 것을 고르시오';
-      showQuiz();
-    }
-
     function updateProgress() {
-      const progressPercent = Math.round((skippedIndices.size / flashcards.length) * 100);
+      const progressPercent = Math.round((results.length / flashcards.length) * 100);
       document.getElementById('score').textContent = progressPercent;
     }
 
@@ -180,20 +172,7 @@
     function nextQuiz(correct, chosen = '') {
       const feedback = document.getElementById('answer-feedback');
       const currentItem = flashcards[current];
-
       skippedIndices.add(current);
-
-      if (correct) {
-        score++;
-        feedback.style.color = '#5DE955';
-        feedback.textContent = '정답입니다!';
-      } else {
-        const answer = swap ? currentItem.word : currentItem.meaning;
-        feedback.style.color = 'red';
-        feedback.textContent = `틀렸어요! 정답은 "${answer}" 입니다.`;
-        document.getElementById('next-btn').style.display = 'inline-block';
-        document.querySelector('.unknown-btn').style.display = 'none';
-      }
 
       results.push({
         word: currentItem.word,
@@ -202,12 +181,29 @@
         userAnswer: chosen
       });
 
-      setTimeout(() => {
-        if (correct) {
+      updateProgress();
+
+      if (correct) {
+        score++;
+        feedback.style.color = '#5DE955';
+        feedback.textContent = '정답입니다!';
+        setTimeout(() => {
           feedback.textContent = '';
           goToNext();
-        }
-      }, 700);
+        }, 700);
+      } else {
+        const answer = swap ? currentItem.word : currentItem.meaning;
+        feedback.style.color = 'red';
+        feedback.textContent = `틀렸어요! 정답은 "${answer}" 입니다.`;
+        document.getElementById('next-btn').style.display = 'inline-block';
+        document.querySelector('.unknown-btn').style.display = 'none';
+
+        // ❌ Disable all buttons
+        document.querySelectorAll('.option').forEach(btn => {
+          btn.disabled = true;
+          btn.classList.add('disabled-option');
+        });
+      }
     }
 
     function goToNext() {
@@ -235,7 +231,6 @@
       feedback.textContent = `정답은 "${answer}" 입니다.`;
 
       skippedIndices.add(current);
-
       results.push({
         word: flashcards[current].word,
         meaning: flashcards[current].meaning,
@@ -243,8 +238,15 @@
         userAnswer: '(모르겠어요)'
       });
 
+      updateProgress();
       document.getElementById('next-btn').style.display = 'inline-block';
       document.querySelector('.unknown-btn').style.display = 'none';
+
+      // ❌ Disable all buttons
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.disabled = true;
+        btn.classList.add('disabled-option');
+      });
     }
 
     function showResult() {
@@ -309,10 +311,56 @@
         }
       });
 
-      ul.appendChild(correctGroup);
-      ul.appendChild(wrongGroup);
+      if (correctGroup.childElementCount > 1) ul.appendChild(correctGroup);
+      if (wrongGroup.childElementCount > 1) ul.appendChild(wrongGroup);
+
       document.getElementById('result-area').style.display = 'block';
     }
+
+    document.getElementById('redo-btn').addEventListener('click', () => {
+      current = 0;
+      score = 0;
+      results = [];
+      skippedIndices.clear();
+
+      document.getElementById('result-area').style.display = 'none';
+      document.querySelector('.progress-badge').style.display = 'inline-block';
+      document.getElementById('save-btn').style.display = 'none';
+      document.getElementById('redo-btn').style.display = 'none';
+
+      showQuiz();
+    });
+
+    // 💾 단어 저장하기 버튼
+    document.getElementById('save-btn').addEventListener('click', async () => {
+      try {
+        const newSet = flashcards.map(f => ({ word: f.word, meaning: f.meaning }));
+        const res = await fetch("/word_list");
+        const html = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+        const existingWords = [...doc.querySelectorAll(".result-word")].map(el => el.textContent.trim());
+        const isAlreadySaved = newSet.every(item => existingWords.includes(item.word));
+        if (isAlreadySaved) {
+          alert("이미 저장된 단어 세트입니다.");
+          return;
+        }
+        const form = new FormData();
+        form.append("words_json", JSON.stringify(newSet));
+        const saveRes = await fetch("/save-list", {
+          method: "POST",
+          body: form,
+        });
+        if (saveRes.ok) {
+          alert("단어가 성공적으로 저장되었습니다!");
+        } else {
+          alert("저장 중 오류가 발생했습니다.");
+        }
+      } catch (e) {
+        console.error("단어 저장 실패:", e);
+        alert("저장에 실패했습니다.");
+      }
+    });
 
     window.onload = showQuiz;
   </script>
