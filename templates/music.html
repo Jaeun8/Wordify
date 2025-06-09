@@ -63,6 +63,10 @@
 <main>
     <section class="playlist">
         <h2>🎵 오늘의 추천 노래</h2>
+        <div style="text-align: center; margin-top: 20px;">
+            <button id="refresh-btn" class="refresh-btn">🔄 다시 추천받기</button>
+          </div>
+          
         <ul class="music-list">
           {% for track in tracks %}
           <li class="music-item">
@@ -85,7 +89,33 @@
 
 
 <script>
-</script>
+    document.getElementById('refresh-btn').addEventListener('click', async function () {
+      const response = await fetch('/api/refresh-tracks');
+      const tracks = await response.json();
+    
+      const list = document.querySelector('.music-list');
+      list.innerHTML = ''; // 기존 트랙 삭제
+    
+      tracks.forEach(track => {
+        const li = document.createElement('li');
+        li.className = 'music-item';
+    
+        li.innerHTML = `
+          <img src="${track.album_cover}" alt="앨범 커버" class="album-cover">
+          <div class="music-info">
+            <h3>${track.name}</h3>
+            <p>${track.artist}</p>
+            <details class="lyrics-box">
+              <summary>🎤 가사 보기</summary>
+              <pre>${track.lyrics}</pre>
+            </details>
+          </div>
+        `;
+        list.appendChild(li);
+      });
+    });
+    </script>
+    
 </body>
 </html>
   

@@ -472,6 +472,14 @@ def playlist():
 
     return render_template('music.html', tracks=track_list)
 
+@app.route('/api/refresh-tracks')
+def refresh_tracks():
+    tracks = []
+    for _ in range(5):
+        track, lyrics = get_track_with_lyrics()
+        track['lyrics'] = lyrics
+        tracks.append(track)
+    return jsonify(tracks)
 
 
 

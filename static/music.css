@@ -431,3 +431,19 @@
   h3{
     color: #333;
   }
+
+  .refresh-btn {
+    background-color: #faa21f;
+    color: white;
+    font-size: 16px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .refresh-btn:hover {
+    background-color: #2980b9;
+  }
+  
