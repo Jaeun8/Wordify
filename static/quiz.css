@@ -375,11 +375,19 @@ main {
   background-color: #faa21f;
   color: white;
   margin-left: auto;
-  padding: 5px 14px;
+  padding: 5px 12px;
   font-weight: 700;
   border-radius: 30px;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 2vw, 1rem); /* Responsive font size */
   user-select: none;
+  width: 100px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .quiz-header button {
