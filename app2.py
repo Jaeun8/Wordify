@@ -447,7 +447,7 @@ def playlist():
     track_list = []
     seen_titles = set()
     
-    while len(track_list) < 5:  # 원하는 곡 수만큼 반복
+    while len(track_list) < 20:  # 원하는 곡 수만큼 반복
         track, lyrics = get_track_with_lyrics()
         if track['name'] in seen_titles:
             continue

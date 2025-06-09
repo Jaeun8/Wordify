@@ -346,7 +346,7 @@
   /* Main Content */
   .playlist {
     padding: 30px;
-    background-color: #FFA500;
+    background-color: #f8d28c;
   }
   
   .music-list {
@@ -358,7 +358,7 @@
     display: flex;
     align-items: center;
     margin-bottom: 20px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #000000;
     padding-bottom: 15px;
   }
   
@@ -379,27 +379,55 @@
     color: #666;
   }
   
-  .music-info a {
-    color: #007BFF;
-    text-decoration: none;
-  }
-  
+
   .lyrics-box {
     margin-top: 10px;
-    background-color: #666;
-    padding: 10px;
-    border-radius: 6px;
+    background-color: #e9e9e9;
+    padding: 15px;
+    border-radius: 8px;
+    width: 100vw;
+    max-width: 1000px;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    box-sizing: border-box;
   }
   
   .lyrics-box summary {
     cursor: pointer;
     font-weight: bold;
+    font-size: 16px;
+    color: #444;
   }
   
   .lyrics-box pre {
     white-space: pre-wrap;
-    margin: 10px 0 0;
-    font-size: 14px;
+    margin-top: 10px;
+    font-size: 15px;
     color: #333;
+    line-height: 1.6;
+  
+    /* ✨ 스크롤 가능하도록 설정 */
+    max-height: 300px;        /* 원하는 높이로 조절 가능 */
+    overflow-y: auto;
+    padding-right: 10px;
   }
   
+
+  pre{
+    white-space: pre-line;
+    margin-top: 10px;
+    font-size: 15px;
+    color: #ffffff;
+    line-height: 1.6;
+  }
+  
+
+  h2{
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #000000;
+  }
+  h3{
+    color: #333;
+  }
