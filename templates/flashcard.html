@@ -21,7 +21,11 @@
           <button class="nav-btn streaks">Streaks</button>
         </form>
       </li>
-      
+      <li>
+        <form action="{{ url_for('playlist') }}">
+          <button class="nav-btn streaks">Playlist</button>
+        </form>
+      </li>
       <li>
         <div class="dropdown">
           <button class="dropbtn"> 
@@ -93,8 +97,8 @@
   
 
   <script>
-  const flashcards = JSON.parse('{{ quiz_words|tojson|safe }}');
-  
+    const flashcards = {{ quiz_words|tojson|safe }};
+    
     let currentIndex = 0;
     
     function showCard(index) {
@@ -131,14 +135,14 @@
         document.getElementById('meaning').textContent = '단어 리스트가 비어있습니다.';
       }
     };
-
+  
     const form = document.getElementById('save-form');
-  const hiddenInput = document.getElementById('words_json');
-  form.addEventListener('submit', function (e) {
-    const jsonData = JSON.stringify(flashcards);
-    hiddenInput.value = jsonData;
-  });
-  </script>
+    const hiddenInput = document.getElementById('words_json');
+    form.addEventListener('submit', function (e) {
+      const jsonData = JSON.stringify(flashcards);
+      hiddenInput.value = jsonData;
+    });
+  </script>  
   </body>
 </html>
   

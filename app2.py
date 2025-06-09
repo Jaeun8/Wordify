@@ -305,21 +305,25 @@ def add_streak():
 @login_required
 def my_flashcard():
     if request.method == 'POST':
-        words_json = request.form.get('words_data')
+        words_json = request.form.get('words_json')
         if words_json:
-            session['quiz_words'] = words_json  # 세션에 저장
-        return redirect(url_for('my_flashcard'))  # 실제 redirect
+            session['quiz_words'] = words_json  # JSON 문자열로 저장
+        return redirect(url_for('my_flashcard'))
 
     else:
-        # GET 요청일 때: 세션에서 단어 꺼내기
         words_json = session.pop('quiz_words', None)
         if words_json:
-            quiz_words = json.loads(words_json)
+            if isinstance(words_json, str):
+                quiz_words = json.loads(words_json)  # 문자열이면 파싱
+            else:
+                quiz_words = words_json  # 이미 리스트면 그냥 사용
         else:
             flashcards = Flashcard.query.filter_by(user_id=current_user.id).all()
             quiz_words = [{"word": f.word, "meaning": f.meaning} for f in flashcards]
 
-    return render_template('flashcard.html', quiz_words=quiz_words)
+        return render_template('list.html', word_list=quiz_words)
+
+
 
 
 @app.route('/select')
@@ -351,21 +355,42 @@ def select_song():
 
 
 
-@app.route('/flashcard/save', methods=['POST'])
+@app.route('/save_list', methods=['POST'])
 @login_required
-def save_flashcard():
-    data = request.json
-    word = data.get('word')
-    meaning = data.get('meaning')
+def save_list():
+    words_json = request.form.get('words_json')
+    if not words_json:
+        flash('저장할 단어가 없습니다.')
+        return redirect(url_for('my_flashcard'))  # 적절히 리다이렉트
+
+    try:
+        flashcards = json.loads(words_json)
+    except Exception as e:
+        flash('단어 데이터가 올바르지 않습니다.')
+        return redirect(url_for('my_flashcard'))
+
     user_id = current_user.id
+    saved_count = 0
 
-    if not word or not meaning:
-        return jsonify({"error": "Word and meaning are required"}), 400
+    for item in flashcards:
+        word = item.get('word')
+        meaning = item.get('meaning', '')
+        if not word:
+            continue
 
-    flashcard = Flashcard(user_id=user_id, word=word, meaning=meaning)
-    db.session.add(flashcard)
+        # 중복 저장 방지 (선택사항)
+        existing = Flashcard.query.filter_by(user_id=user_id, word=word).first()
+        if existing:
+            continue
+
+        new_flashcard = Flashcard(user_id=user_id, word=word, meaning=meaning)
+        db.session.add(new_flashcard)
+        saved_count += 1
+
     db.session.commit()
-    return jsonify({"message": "Flashcard saved"}), 200
+    flash(f'{saved_count}개의 단어가 저장되었습니다.')
+    return redirect(url_for('my_flashcard'))
+
 
 @app.route('/next-track')
 def next_track():
@@ -410,44 +435,6 @@ def word_list():
 
     return render_template('list.html', word_list=word_list_data)
 
-
-    
-
-@app.route('/save-list', methods=['POST'])
-@login_required
-def save_list():
-    words_json = request.form.get('words_json')
-    if not words_json:
-        return 'No data provided', 400
-
-    try:
-        words = json.loads(words_json)
-        user_id = current_user.id
-
-        # 기존 단어들 불러오기
-        existing_words = Word.query.filter_by(user_id=user_id).with_entities(Word.word).all()
-        existing_word_set = set(w[0] for w in existing_words)
-
-        # 중복 없는 단어만 추가
-        new_words = []
-        for item in words:
-            if item.get('word') not in existing_word_set:
-                new_words.append(Word(
-                    word=item.get('word'),
-                    meaning=item.get('meaning'),
-                    user_id=user_id
-                ))
-
-        if not new_words:
-            return 'Already exists', 200
-
-        db.session.add_all(new_words)
-        db.session.commit()
-        return jsonify({"message": f"{len(new_words)} words saved"}), 200
-
-    except Exception as e:
-        db.session.rollback()
-        return f"Error saving words: {e}", 500
 
 @app.route('/delete_all', methods=['POST'])
 @login_required

@@ -23,7 +23,7 @@
       </li>
       <li>
         <form action="{{ url_for('playlist') }}">
-          <button class="nav-btn streaks">Musics</button>
+          <button class="nav-btn streaks">Playlist</button>
         </form>
       </li>
       
@@ -71,12 +71,12 @@
     </div>
     <main style="display: flex; gap: 20px; padding: 20px;">
 
-    <div id="list-buttons-container" style="width: 200px; border-right: 1px solid #ccc; padding-right: 10px;">
+    <div id="list-buttons-container" >
       <!-- JS가 버튼 동적으로 추가 -->
     </div>
   
     <!-- 오른쪽: 단어 리스트 표시 -->
-    <div id="word-list" style="flex-grow: 1; padding-left: 10px;">
+    <div id="word-list" >
       <!-- 선택된 리스트 단어들 출력 -->
     </div>
 
@@ -149,6 +149,8 @@ if (words.length > 0) {
   buttonsContainer.innerHTML = '<p>저장된 리스트가 없습니다.</p>';
   wordListDiv.innerHTML = '';
 }
+
+btn.className = 'list-button';
 
 
 </script>
