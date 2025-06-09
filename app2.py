@@ -253,7 +253,7 @@ def delete_all_words():
 def quiz():
     all_words = session.get('quiz_words', [])
     filtered = [w for w in all_words if w['meaning'] != "정의를 찾을 수 없음"]
-    quiz_words = random.sample(filtered, min(5, len(filtered))) if filtered else []
+    quiz_words = filtered  # 최대 10개 또는 전체 단어 그대로 사용
     return render_template('quiz.html', quiz_words=quiz_words)
 
 @app.route('/word_list')
