@@ -1,20 +1,14 @@
-from flask import Flask, render_template, redirect, url_for, request, session, jsonify
+from flask import Flask, render_template, redirect, url_for, request, session, jsonify, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import date
+from datetime import date, datetime, timedelta
 import traceback
 import requests
 import spacy
 import os
 import random
-from datetime import datetime
 import json
-from flask import flash
-from datetime import timedelta
-
-
-
 
 try:
     import en_core_web_sm
@@ -22,15 +16,13 @@ try:
 except ImportError:
     nlp = spacy.load("en_core_web_sm")
 
-
 app = Flask(__name__)
 app.secret_key = 'ywefewfwesdf'
 app.config['SECRET_KEY'] = 'your_secret_key_here'
 
-# 1) 데이터베이스 경로 및 폴더 처리 - instance 폴더가 없으면 생성
+# DB 설정
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 INSTANCE_FOLDER = os.path.join(BASE_DIR, 'instance')
-
 if not os.path.exists(INSTANCE_FOLDER):
     os.makedirs(INSTANCE_FOLDER)
 
@@ -38,14 +30,12 @@ DB_PATH = os.path.join(INSTANCE_FOLDER, 'db.sqlite')
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_PATH}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-
-# -------------- 모델 ----------------
+# -------------------- 모델 정의 --------------------
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
@@ -59,22 +49,17 @@ class Streak(db.Model):
     date = db.Column(db.Date, default=date.today)
 
 class Flashcard(db.Model):
-    __tablename__ = 'flashcard'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     word = db.Column(db.String(100))
     meaning = db.Column(db.String(200))
+
 class Word(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     word = db.Column(db.String(100), nullable=False)
     meaning = db.Column(db.String(200), nullable=False)
-    user_id = db.Column(db.Integer, nullable=True)  # 로그인 시스템 연동 시 필요
+    user_id = db.Column(db.Integer, nullable=True)
     saved_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
 
 class WordList(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -82,30 +67,21 @@ class WordList(db.Model):
     word = db.Column(db.String(100), nullable=False)
     meaning = db.Column(db.String(200), nullable=False)
 
-# --------- iTunes API 관련 함수 --------------
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
+# -------------------- 외부 API --------------------
 def search_itunes_tracks(artist, limit=10):
-    url = f"https://itunes.apple.com/search"
-    params = {
-        'term': artist,
-        'entity': 'song',
-        'limit': limit,
-        'country': 'US'
-    }
+    url = "https://itunes.apple.com/search"
+    params = {'term': artist, 'entity': 'song', 'limit': limit, 'country': 'US'}
     response = requests.get(url, params=params)
-    if response.status_code == 200:
-        data = response.json()
-        return data.get('results', [])
-    return []
+    return response.json().get('results', []) if response.status_code == 200 else []
 
 def get_lyrics_ovh(artist, title):
     url = f"https://api.lyrics.ovh/v1/{artist}/{title}"
     response = requests.get(url)
-    if response.status_code == 200:
-        data = response.json()
-        return data.get('lyrics', None)
-    else:
-        return None
+    return response.json().get('lyrics') if response.status_code == 200 else None
 
 def get_track_with_lyrics():
     pop_artists = [
@@ -119,73 +95,52 @@ def get_track_with_lyrics():
         tracks = search_itunes_tracks(artist)
         if not tracks:
             continue
-        random_track = random.choice(tracks)
-
-        track_name = random_track.get('trackName')
-        artist_name = random_track.get('artistName')
-        album_cover = random_track.get('artworkUrl100', '').replace('100x100bb', '300x300bb')
-        itunes_url = random_track.get('trackViewUrl')
-
-        lyrics = get_lyrics_ovh(artist_name, track_name)
+        track = random.choice(tracks)
+        lyrics = get_lyrics_ovh(track.get('artistName'), track.get('trackName'))
         if lyrics:
             return {
-                'name': track_name,
-                'artist': artist_name,
-                'album_cover': album_cover,
-                'external_url': itunes_url
+                'name': track.get('trackName'),
+                'artist': track.get('artistName'),
+                'album_cover': track.get('artworkUrl100', '').replace('100x100bb', '300x300bb'),
+                'external_url': track.get('trackViewUrl')
             }, lyrics
 
-
-# ---------------- NLP & 단어 뜻 관련 함수 ------------------
-
+# -------------------- NLP --------------------
 def get_definition(word):
     url = f"https://api.dictionaryapi.dev/api/v2/entries/en/{word}"
     response = requests.get(url)
     if response.status_code == 200:
-        data = response.json()
         try:
-            return data[0]['meanings'][0]['definitions'][0]['definition']
+            return response.json()[0]['meanings'][0]['definitions'][0]['definition']
         except (KeyError, IndexError):
-            return "\uc815\uc758\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c"
-    else:
-        return "\uc815\uc758\ub97c \ucc3e\uc744 \uc218 \uc5c6\uc74c"
+            return "정의를 찾을 수 없음"
+    return "정의를 찾을 수 없음"
 
 def get_nouns_verbs(text):
     doc = nlp(text)
-    filtered_words = [token.text for token in doc if token.pos_ in ('NOUN', 'VERB')]
-    unique_words = list(dict.fromkeys(filtered_words))
-    return unique_words
+    return list(dict.fromkeys([t.text for t in doc if t.pos_ in ('NOUN', 'VERB')]))
 
 def get_words_meanings(lyrics, count=10):
     words = get_nouns_verbs(lyrics)
-    result = []
-    for w in words[:count]:
-        meaning = get_definition(w.lower())
-        result.append({'word': w, 'meaning': meaning})
-    return result
+    return [{'word': w, 'meaning': get_definition(w.lower())} for w in words[:count]]
 
-
-
-# ---------------- Routes ----------------
-
+# -------------------- 라우팅 --------------------
 @app.route('/')
 def index():
     return redirect(url_for('home'))
 
 @app.route('/home')
 def home():
-    track_data, lyrics = get_track_with_lyrics()
-    if not track_data:
-        return "\ub178\ub798\ub97c \ubd88\ub7ec\uc62c \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.", 500
-
-    track_info = {
-        'title': track_data['name'],
-        'artist': track_data['artist'],
-        'album_cover': track_data['album_cover'],
-        'spotify_url': track_data['external_url'],
+    track, lyrics = get_track_with_lyrics()
+    if not track:
+        return "노래를 불러올 수 없습니다.", 500
+    return render_template('homepage.html', track={
+        'title': track['name'],
+        'artist': track['artist'],
+        'album_cover': track['album_cover'],
+        'spotify_url': track['external_url'],
         'lyrics': lyrics
-    }
-    return render_template('homepage.html', track=track_info)
+    })
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -200,22 +155,14 @@ def signup():
             return render_template('Wordify_Signup.html', error="모든 필드를 입력해주세요.")
         if password != confirm_password:
             return render_template('Wordify_Signup.html', error="비밀번호가 일치하지 않습니다.")
-
-        existing_user = User.query.filter(
-            (User.username == username) | (User.email == email)
-        ).first()
-        if existing_user:
+        if User.query.filter((User.username == username) | (User.email == email)).first():
             return render_template('Wordify_Signup.html', error="이미 존재하는 사용자입니다.")
 
-        try:
-            hashed_pw = generate_password_hash(password, method='pbkdf2:sha256')
-            new_user = User(name=name, email=email, username=username, password=hashed_pw)
-            db.session.add(new_user)
-            db.session.commit()
-            return redirect(url_for('login'))
-        except Exception as e:
-            print(traceback.format_exc())
-            return render_template('Wordify_Signup.html', error=f"회원가입 중 오류 발생: {str(e)}")
+        hashed_pw = generate_password_hash(password)
+        new_user = User(name=name, email=email, username=username, password=hashed_pw)
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect(url_for('login'))
 
     return render_template('Wordify_Signup.html')
 
@@ -224,23 +171,16 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-
-        if not username or not password:
-            return render_template('Wordify_Login.html', error="모든 필드를 입력해주세요.")
-
         user = User.query.filter_by(username=username).first()
+
         if user and check_password_hash(user.password, password):
             login_user(user, remember=True)
-
             today = date.today()
             if not Streak.query.filter_by(username=user.username, date=today).first():
                 db.session.add(Streak(username=user.username, date=today))
                 db.session.commit()
-
             return redirect(url_for('home'))
-        else:
-            return render_template('Wordify_Login.html', error="아이디 또는 비밀번호가 잘못되었습니다.")
-
+        return render_template('Wordify_Login.html', error="아이디 또는 비밀번호가 잘못되었습니다.")
     return render_template('Wordify_Login.html')
 
 @app.route('/logout')
@@ -250,209 +190,28 @@ def logout():
     flash("You have been logged out.")
     return redirect(url_for('home'))
 
-@app.route('/streaks')
-@login_required
-def streaks_page():
-    return render_template('streaks.html', username=current_user.username)
-
-@app.route('/api/streaks/<username>', methods=['GET'])
-@login_required
-def get_streaks(username):
-    # 날짜 기준으로 내림차순 정렬 (최근 기록부터)
-    streaks = Streak.query.filter_by(username=username).order_by(Streak.date.desc()).all()
-    dates = [s.date for s in streaks]
-
-    # 현재 연속 streak 계산
-    today = date.today()
-    current_streak = 0
-    expected_day = today
-
-    for d in dates:
-        if d == expected_day:
-            current_streak += 1
-            expected_day -= timedelta(days=1)
-        elif (expected_day - d).days == 1:
-            # 하루 차이로 연속이 끊김
-            break
-        else:
-            break
-
-    return jsonify({
-        "dates": [d.isoformat() for d in dates],
-        "current_streak": current_streak
-    })
-
-@app.route('/api/streaks/add', methods=['POST'])
-@login_required
-def add_streak():
-    data = request.json
-    username = data.get("username") or current_user.username
-    today = date.today()
-
-    if not username:
-        return jsonify({"error": "Username required"}), 400
-
-    existing = Streak.query.filter_by(username=username, date=today).first()
-    if not existing:
-        new_streak = Streak(username=username, date=today)
-        db.session.add(new_streak)
-        db.session.commit()
-        return jsonify({"message": "Streak added"}), 200
-    else:
-        return jsonify({"message": "Already exists"}), 200
-
 @app.route('/my-flashcard', methods=['GET', 'POST'])
 @login_required
 def my_flashcard():
     if request.method == 'POST':
-<<<<<<< HEAD
-        words_json = request.form.get('words_data')
-        quiz_words = json.loads(words_json) if words_json else []
+        words_json = request.form.get('words_json')
+        if words_json:
+            session['quiz_words'] = words_json
+        return redirect(url_for('my_flashcard'))
+
+    words_json = session.pop('quiz_words', None)
+    if words_json:
+        quiz_words = json.loads(words_json)
     else:
         flashcards = Flashcard.query.filter_by(user_id=current_user.id).all()
         quiz_words = [{"word": f.word, "meaning": f.meaning} for f in flashcards]
 
-    message = request.args.get('message')  # 메시지 쿼리 파라미터 받아오기
+    message = request.args.get('message')
     return render_template('flashcard.html', quiz_words=quiz_words, message=message)
-=======
-        words_json = request.form.get('words_json')
-        if words_json:
-            session['quiz_words'] = words_json  # JSON 문자열로 저장
-        return redirect(url_for('my_flashcard'))
 
-    else:
-        words_json = session.pop('quiz_words', None)
-        if words_json:
-            if isinstance(words_json, str):
-                quiz_words = json.loads(words_json)  # 문자열이면 파싱
-            else:
-                quiz_words = words_json  # 이미 리스트면 그냥 사용
-        else:
-            flashcards = Flashcard.query.filter_by(user_id=current_user.id).all()
-            quiz_words = [{"word": f.word, "meaning": f.meaning} for f in flashcards]
-
-        return render_template('list.html', word_list=quiz_words)
-
->>>>>>> b84d8a8de55b6163d0853f3a46769d1f52e6f613
-
-
-
-@app.route('/select')
+@app.route('/save-to-word-list', methods=['POST'])
 @login_required
-def select_song():
-    track_data, lyrics = get_track_with_lyrics()
-    if not track_data:
-        return redirect(url_for('home'))
-
-    # 많은 단어를 받아옴 (예: 50개)
-    flashcards = get_words_meanings(lyrics, count=50)
-
-    # '정의를 찾을 수 없음'인 단어는 제외
-    filtered_flashcards = [f for f in flashcards if f['meaning'].strip() != "정의를 찾을 수 없음"]
-
-    # 의미 있는 단어가 10개 이상 있으면 10개만 선택
-    if len(filtered_flashcards) >= 10:
-        selected_flashcards = filtered_flashcards[:10]
-    else:
-        # 10개가 안 되면 그냥 있는 것만 넘김 (없으면 없는 대로)
-        selected_flashcards = filtered_flashcards
-
-    session['flashcards'] = selected_flashcards
-    session['flashcard_index'] = 0
-    session['quiz_words'] = selected_flashcards
-
-    return render_template('flashcard.html', flashcards=selected_flashcards, quiz_words=selected_flashcards)
-
-
-
-
-@app.route('/save_list', methods=['POST'])
-@login_required
-def save_list():
-    words_json = request.form.get('words_json')
-    if not words_json:
-        flash('저장할 단어가 없습니다.')
-        return redirect(url_for('my_flashcard'))  # 적절히 리다이렉트
-
-    try:
-        flashcards = json.loads(words_json)
-    except Exception as e:
-        flash('단어 데이터가 올바르지 않습니다.')
-        return redirect(url_for('my_flashcard'))
-
-    user_id = current_user.id
-    saved_count = 0
-
-    for item in flashcards:
-        word = item.get('word')
-        meaning = item.get('meaning', '')
-        if not word:
-            continue
-
-        # 중복 저장 방지 (선택사항)
-        existing = Flashcard.query.filter_by(user_id=user_id, word=word).first()
-        if existing:
-            continue
-
-        new_flashcard = Flashcard(user_id=user_id, word=word, meaning=meaning)
-        db.session.add(new_flashcard)
-        saved_count += 1
-
-    db.session.commit()
-    flash(f'{saved_count}개의 단어가 저장되었습니다.')
-    return redirect(url_for('my_flashcard'))
-
-
-@app.route('/next-track')
-def next_track():
-    track_data, lyrics = get_track_with_lyrics()
-    if not track_data:
-        return jsonify({'error': 'No track found'}), 404
-
-    track_info = {
-        'title': track_data['name'],
-        'artist': track_data['artist'],
-        'album_cover': track_data['album_cover'],
-        'spotify_url': track_data['external_url'],
-        'lyrics': lyrics
-    }
-    return jsonify(track_info)
-
-@app.route('/quiz')
-def quiz():
-    all_words = session.get('quiz_words', [])  # session에서 전체 단어 리스트 가져오기
-
-    # '정의를 찾을 수 없음' 단어 제외
-    filtered_words = [w for w in all_words if w['meaning'] != "정의를 찾을 수 없음"]
-
-    # 만약 필터링 후 단어가 없으면 빈 리스트 처리
-    if not filtered_words:
-        quiz_words = []
-    else:
-        import random
-        # 최대 5개 랜덤 선택
-        quiz_words = random.sample(filtered_words, min(5, len(filtered_words)))
-
-    return render_template('quiz.html', quiz_words=quiz_words)
-
-@app.route('/word_list')
-@login_required
-def word_list():
-    # 현재 로그인한 사용자의 단어만 가져오기
-    word_list = Word.query.filter_by(user_id=current_user.id).all()
-
-    # Word 객체를 dict 리스트로 변환
-    word_list_data = [{"word": w.word, "meaning": w.meaning} for w in word_list]
-
-    return render_template('list.html', word_list=word_list_data)
-
-
-<<<<<<< HEAD
-    
-
-@app.route('/save-list', methods=['POST'])
-@login_required
-def save_list():
+def save_to_word_list():
     words_json = request.form.get('words_json')
     if not words_json:
         return redirect(url_for('my_flashcard', message='error'))
@@ -460,20 +219,11 @@ def save_list():
     try:
         words = json.loads(words_json)
         user_id = current_user.id
+        existing = Word.query.filter_by(user_id=user_id).with_entities(Word.word).all()
+        existing_set = set(w[0] for w in existing)
 
-        # 기존 단어들 불러오기
-        existing_words = Word.query.filter_by(user_id=user_id).with_entities(Word.word).all()
-        existing_word_set = set(w[0] for w in existing_words)
-
-        # 중복 없는 단어만 추가
-        new_words = []
-        for item in words:
-            if item.get('word') not in existing_word_set:
-                new_words.append(Word(
-                    word=item.get('word'),
-                    meaning=item.get('meaning'),
-                    user_id=user_id
-                ))
+        new_words = [Word(word=w['word'], meaning=w['meaning'], user_id=user_id)
+                     for w in words if w['word'] not in existing_set]
 
         if not new_words:
             return redirect(url_for('my_flashcard', message='already_saved'))
@@ -484,56 +234,67 @@ def save_list():
 
     except Exception as e:
         db.session.rollback()
-        print("Error saving words:", e)
+        print(e)
         return redirect(url_for('my_flashcard', message='error'))
 
-=======
->>>>>>> b84d8a8de55b6163d0853f3a46769d1f52e6f613
 @app.route('/delete_all', methods=['POST'])
 @login_required
 def delete_all_words():
-    user_id = current_user.id
-    Word.query.filter_by(user_id=user_id).delete()
+    Word.query.filter_by(user_id=current_user.id).delete()
     db.session.commit()
     flash("전체 단어 리스트가 삭제되었습니다.")
     return redirect(url_for('word_list'))
 
-@app.route('/playlist')
-def playlist():
-    track_list = []
-    seen_titles = set()
-    
-    while len(track_list) < 20:  # 원하는 곡 수만큼 반복
-        track, lyrics = get_track_with_lyrics()
-        if track['name'] in seen_titles:
-            continue
-        seen_titles.add(track['name'])
+@app.route('/quiz')
+def quiz():
+    all_words = session.get('quiz_words', [])
+    filtered = [w for w in all_words if w['meaning'] != "정의를 찾을 수 없음"]
+    quiz_words = random.sample(filtered, min(5, len(filtered))) if filtered else []
+    return render_template('quiz.html', quiz_words=quiz_words)
 
-        track['lyrics'] = lyrics  # 🎯 가사 추가!
-        track_list.append(track)
+@app.route('/word_list')
+@login_required
+def word_list():
+    word_list = Word.query.filter_by(user_id=current_user.id).all()
+    return render_template('list.html', word_list=[{"word": w.word, "meaning": w.meaning} for w in word_list])
 
-    return render_template('music.html', tracks=track_list)
+@app.route('/select')
+@login_required
+def select_song():
+    track, lyrics = get_track_with_lyrics()
+    flashcards = get_words_meanings(lyrics, 50)
+    filtered = [f for f in flashcards if f['meaning'] != "정의를 찾을 수 없음"]
+    selected = filtered[:10] if len(filtered) >= 10 else filtered
+    session['flashcards'] = selected
+    session['flashcard_index'] = 0
+    session['quiz_words'] = selected
+    return render_template('flashcard.html', flashcards=selected, quiz_words=selected)
 
-@app.route('/api/refresh-tracks')
-def refresh_tracks():
-    tracks = []
-    for _ in range(5):
-        track, lyrics = get_track_with_lyrics()
-        track['lyrics'] = lyrics
-        tracks.append(track)
-    return jsonify(tracks)
+@app.route('/streaks')
+@login_required
+def streaks_page():
+    return render_template('streaks.html', username=current_user.username)
 
-@app.route('/make-flashcard', methods=['POST'])
-def make_flashcard():
-    data = request.get_json()
-    words = data.get('words', [])
-    # 세션이나 다른 방법으로 단어들 넘기기
-    session['flashcard_words'] = words
-    return redirect(url_for('flashcard_page'))
+@app.route('/api/streaks/<username>', methods=['GET'])
+@login_required
+def get_streaks(username):
+    streaks = Streak.query.filter_by(username=username).order_by(Streak.date.desc()).all()
+    dates = [s.date for s in streaks]
+    today = date.today()
+    current_streak = 0
+    expected = today
 
+    for d in dates:
+        if d == expected:
+            current_streak += 1
+            expected -= timedelta(days=1)
+        else:
+            break
 
-
-
+    return jsonify({
+        "dates": [d.isoformat() for d in dates],
+        "current_streak": current_streak
+    })
 
 if __name__ == '__main__':
     with app.app_context():
