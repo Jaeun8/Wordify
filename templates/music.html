@@ -23,7 +23,7 @@
       </li>
       <li>
         <form action="{{ url_for('playlist') }}">
-          <button class="nav-btn streaks">Musics</button>
+          <button class="nav-btn streaks">Playlists</button>
         </form>
       </li>
       
@@ -64,7 +64,7 @@
     <section class="playlist">
         <h2>🎵 오늘의 추천 노래</h2>
         <div style="text-align: center; margin-top: 20px;">
-            <button id="refresh-btn" class="refresh-btn">🔄 다시 추천받기</button>
+            <button id="refresh-btn" class="refresh-btn">다시 추천받기</button>
           </div>
           
         <ul class="music-list">
@@ -73,10 +73,12 @@
             <img src="{{ track.album_cover }}" alt="앨범 커버" class="album-cover">
             <div class="music-info">
               <h3>{{ track.name }}</h3>
-              <p>{{ track.artist }}</p>      
+              <p>{{ track.artist }}</p>  
+              <button class="make-flashcard-btn" data-lyrics="{{ track.lyrics | e }}">Flashcard 만들기</button>    
               <details class="lyrics-box">
                 <summary>🎤 가사 보기</summary>
                 <pre>{{ track.lyrics }}</pre>
+
               </details>
             </div>
           </li>
@@ -89,33 +91,75 @@
 
 
 <script>
-    document.getElementById('refresh-btn').addEventListener('click', async function () {
-      const response = await fetch('/api/refresh-tracks');
-      const tracks = await response.json();
+    document.addEventListener('DOMContentLoaded', () => {
+      // refresh 버튼 클릭 시 트랙 재로딩
+      document.getElementById('refresh-btn').addEventListener('click', async function () {
+        const response = await fetch('/api/refresh-tracks');
+        const tracks = await response.json();
     
-      const list = document.querySelector('.music-list');
-      list.innerHTML = ''; // 기존 트랙 삭제
+        const list = document.querySelector('.music-list');
+        list.innerHTML = '';
     
-      tracks.forEach(track => {
-        const li = document.createElement('li');
-        li.className = 'music-item';
+        tracks.forEach(track => {
+          const li = document.createElement('li');
+          li.className = 'music-item';
     
-        li.innerHTML = `
-          <img src="${track.album_cover}" alt="앨범 커버" class="album-cover">
-          <div class="music-info">
-            <h3>${track.name}</h3>
-            <p>${track.artist}</p>
-            <details class="lyrics-box">
-              <summary>🎤 가사 보기</summary>
-              <pre>${track.lyrics}</pre>
-            </details>
-          </div>
-        `;
-        list.appendChild(li);
+          li.innerHTML = `
+            <img src="${track.album_cover}" alt="앨범 커버" class="album-cover">
+            <div class="music-info">
+              <h3>${track.name}</h3>
+              <p>${track.artist}</p>
+              <button class="make-flashcard-btn" data-lyrics="${track.lyrics}">Flashcard 만들기</button>
+              <details class="lyrics-box">
+                <summary>🎤 가사 보기</summary>
+                <pre>${track.lyrics}</pre>
+              </details>
+            </div>
+          `;
+          list.appendChild(li);
+        });
+      });
+    
+      // 이벤트 위임으로 Flashcard 버튼 클릭 처리
+      document.addEventListener('click', async function (event) {
+        if (event.target && event.target.classList.contains('make-flashcard-btn')) {
+          const button = event.target;
+          const lyrics = button.getAttribute('data-lyrics');
+          const stopwords = ['i', 'you', 'the', 'and', 'a', 'of', 'to', 'in', 'my', 'is', 'on', 'it', 'that', 'me', 'for', 'your', 'we', 'are', 'was', 'with', 'at', 'be', 'this', 'so', 'all', 'but'];
+    
+          const words = lyrics
+            .toLowerCase()
+            .replace(/[^\w\s]/g, '')
+            .split(/\s+/)
+            .filter(w => w.length > 2 && !stopwords.includes(w));
+    
+          const uniqueWords = [...new Set(words)];
+          const selected = uniqueWords.sort(() => 0.5 - Math.random()).slice(0, 10);
+          const wordsData = selected.map(word => ({ word: word, meaning: "" }));
+    
+          const formData = new FormData();
+          formData.append('words_data', JSON.stringify(wordsData));
+    
+          const response = await fetch('/my-flashcard', {
+            method: 'POST',
+            body: formData
+          });
+    
+          if (response.redirected) {
+            window.location.href = response.url;
+          }
+        }
       });
     });
-    </script>
-    
+
+    document.addEventListener('click', function(event) {
+        if (event.target && event.target.classList.contains('make-flashcard-btn')) {
+            // 그냥 단어 추출 없이 /select 페이지로 이동
+            window.location.href = '/select';
+        }
+        });
+
+    </script>    
 </body>
 </html>
   

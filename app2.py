@@ -301,23 +301,25 @@ def add_streak():
     else:
         return jsonify({"message": "Already exists"}), 200
 
-
 @app.route('/my-flashcard', methods=['GET', 'POST'])
 @login_required
 def my_flashcard():
     if request.method == 'POST':
         words_json = request.form.get('words_data')
         if words_json:
+            session['quiz_words'] = words_json  # 세션에 저장
+        return redirect(url_for('my_flashcard'))  # 실제 redirect
+
+    else:
+        # GET 요청일 때: 세션에서 단어 꺼내기
+        words_json = session.pop('quiz_words', None)
+        if words_json:
             quiz_words = json.loads(words_json)
         else:
-            quiz_words = []
-    else:
-        # 기존 처리 (전체 단어 불러오기)
-        flashcards = Flashcard.query.filter_by(user_id=current_user.id).all()
-        quiz_words = [{"word": f.word, "meaning": f.meaning} for f in flashcards]
+            flashcards = Flashcard.query.filter_by(user_id=current_user.id).all()
+            quiz_words = [{"word": f.word, "meaning": f.meaning} for f in flashcards]
 
     return render_template('flashcard.html', quiz_words=quiz_words)
-
 
 
 @app.route('/select')
@@ -480,6 +482,16 @@ def refresh_tracks():
         track['lyrics'] = lyrics
         tracks.append(track)
     return jsonify(tracks)
+
+@app.route('/make-flashcard', methods=['POST'])
+def make_flashcard():
+    data = request.get_json()
+    words = data.get('words', [])
+    # 세션이나 다른 방법으로 단어들 넘기기
+    session['flashcard_words'] = words
+    return redirect(url_for('flashcard_page'))
+
+
 
 
 
