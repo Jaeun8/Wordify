@@ -414,6 +414,7 @@ nav a {
   cursor: pointer;
   font-size: 15px;
   font-weight: bold;
+  position: fixed;
 }
 .flashcard-go-btn {
   background-color: black;
