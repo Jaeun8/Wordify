@@ -361,7 +361,7 @@ def make_flashcard():
     return redirect(url_for('flashcard_page'))
 
 
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True, port=8090)
+if __name__ == "__main__":
+    # Render.com은 환경변수 PORT를 제공
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
