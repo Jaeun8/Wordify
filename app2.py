@@ -9,6 +9,7 @@ import spacy
 import os
 import random
 import json
+import lyricsgenius
 
 try:
     import en_core_web_sm
@@ -34,6 +35,10 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+# Genius API 설정
+GENIUS_API_TOKEN = "FMzgu1G_uCPG0e9OqdUgsPBlBM7uJHZctK40proPeNoW4t7KhD4Ivg8jbZ5g3bXV"
+genius = lyricsgenius.Genius(GENIUS_API_TOKEN, timeout=5, skip_non_songs=True, excluded_terms=["(Remix)", "(Live)"])
 
 # -------------------- 모델 정의 --------------------
 class User(UserMixin, db.Model):
@@ -83,6 +88,15 @@ def get_lyrics_ovh(artist, title):
     response = requests.get(url)
     return response.json().get('lyrics') if response.status_code == 200 else None
 
+def get_lyrics_genius(artist, title):
+    try:
+        song = genius.search_song(title, artist)
+        if song and song.lyrics:
+            return song.lyrics
+    except Exception as e:
+        print(f"Genius 가사 오류: {e}")
+    return None
+
 def get_track_with_lyrics():
     pop_artists = [
         'Taylor Swift', 'Ed Sheeran', 'Ariana Grande', 'Bruno Mars', 'Billie Eilish',
@@ -90,13 +104,13 @@ def get_track_with_lyrics():
         'Maroon 5', 'Halsey', 'Selena Gomez', 'Post Malone', 'Lady Gaga',
         'Beyoncé', 'Rihanna', 'Sam Smith', 'Charlie Puth'
     ]
-    while True:
+    for _ in range(20):  # 최대 20번만 시도
         artist = random.choice(pop_artists)
         tracks = search_itunes_tracks(artist)
         if not tracks:
             continue
         track = random.choice(tracks)
-        lyrics = get_lyrics_ovh(track.get('artistName'), track.get('trackName'))
+        lyrics = get_lyrics_genius(track.get('artistName'), track.get('trackName'))
         if lyrics:
             return {
                 'name': track.get('trackName'),
@@ -104,6 +118,7 @@ def get_track_with_lyrics():
                 'album_cover': track.get('artworkUrl100', '').replace('100x100bb', '300x300bb'),
                 'external_url': track.get('trackViewUrl')
             }, lyrics
+    return None, None
 
 # -------------------- NLP --------------------
 def get_definition(word):
