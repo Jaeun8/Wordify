@@ -84,11 +84,6 @@ def search_itunes_tracks(artist, limit=10):
     response = requests.get(url, params=params)
     return response.json().get('results', []) if response.status_code == 200 else []
 
-def get_lyrics_ovh(artist, title):
-    url = f"https://api.lyrics.ovh/v1/{artist}/{title}"
-    response = requests.get(url)
-    return response.json().get('lyrics') if response.status_code == 200 else None
-
 def get_lyrics_genius(artist, title):
     try:
         song = genius.search_song(title, artist)
