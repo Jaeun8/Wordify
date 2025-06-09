@@ -363,5 +363,5 @@ def make_flashcard():
 
 if __name__ == "__main__":
     # Render.com은 환경변수 PORT를 제공
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 8090))
     app.run(host='0.0.0.0', port=port)
