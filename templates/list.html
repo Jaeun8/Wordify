@@ -9,11 +9,10 @@
 <body>
 
   <header>
-
-      <form action="{{ url_for('home') }}">
-        <button class="logo" type="submit">WORD<span>IFY</span></button>
-      </form>
-     
+    <form action="{{ url_for('home') }}">
+      <button class="logo" type="submit">WORD<span>IFY</span></button>
+    </form>
+  
     <nav>
       <ul>
         <li>
@@ -34,13 +33,13 @@
             </button>
             <div class="dropdown-content">
               <form action="{{ url_for('my_flashcard') }}">
-                <button  class="flashcard flashcard-btn">flashcard</button>
+                <button class="flashcard flashcard-btn">flashcard</button>
               </form>
               <form action="{{ url_for('quiz') }}">
-                <button  class="quiz-btn quiz">quiz</button>
+                <button class="quiz-btn quiz">quiz</button>
               </form>
               <form action="{{ url_for('quiz') }}">
-                <button  class="list-btn ">my lists</button>
+                <button class="list-btn ">my lists</button>
               </form>
               <li>
                 {% if current_user is defined and current_user.is_authenticated %}
@@ -59,6 +58,7 @@
       </ul>
     </nav>
   </header>
+
 <h1> 나의단어장 </h1>
 
 
