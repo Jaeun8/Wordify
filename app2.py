@@ -307,16 +307,13 @@ def add_streak():
 def my_flashcard():
     if request.method == 'POST':
         words_json = request.form.get('words_data')
-        if words_json:
-            quiz_words = json.loads(words_json)
-        else:
-            quiz_words = []
+        quiz_words = json.loads(words_json) if words_json else []
     else:
-        # 기존 처리 (전체 단어 불러오기)
         flashcards = Flashcard.query.filter_by(user_id=current_user.id).all()
         quiz_words = [{"word": f.word, "meaning": f.meaning} for f in flashcards]
 
-    return render_template('flashcard.html', quiz_words=quiz_words)
+    message = request.args.get('message')  # 메시지 쿼리 파라미터 받아오기
+    return render_template('flashcard.html', quiz_words=quiz_words, message=message)
 
 
 
@@ -416,7 +413,7 @@ def word_list():
 def save_list():
     words_json = request.form.get('words_json')
     if not words_json:
-        return 'No data provided', 400
+        return redirect(url_for('my_flashcard', message='error'))
 
     try:
         words = json.loads(words_json)
@@ -437,15 +434,16 @@ def save_list():
                 ))
 
         if not new_words:
-            return 'Already exists', 200
+            return redirect(url_for('my_flashcard', message='already_saved'))
 
         db.session.add_all(new_words)
         db.session.commit()
-        return jsonify({"message": f"{len(new_words)} words saved"}), 200
+        return redirect(url_for('my_flashcard', message='saved'))
 
     except Exception as e:
         db.session.rollback()
-        return f"Error saving words: {e}", 500
+        print("Error saving words:", e)
+        return redirect(url_for('my_flashcard', message='error'))
 
 @app.route('/delete_all', methods=['POST'])
 @login_required
