@@ -441,6 +441,22 @@ def delete_all_words():
     flash("전체 단어 리스트가 삭제되었습니다.")
     return redirect(url_for('word_list'))
 
+@app.route('/playlist')
+def playlist():
+    track_list = []
+    seen_titles = set()
+    
+    while len(track_list) < 5:  # 원하는 곡 수만큼 반복
+        track, lyrics = get_track_with_lyrics()
+        if track['name'] in seen_titles:
+            continue
+        seen_titles.add(track['name'])
+
+        track['lyrics'] = lyrics  # 🎯 가사 추가!
+        track_list.append(track)
+
+    return render_template('music.html', tracks=track_list)
+
 
 
 
