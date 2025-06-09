@@ -176,23 +176,10 @@ def login():
         if user and check_password_hash(user.password, password):
             login_user(user, remember=True)
             today = date.today()
-            yesterday = today - timedelta(days=1)
 
-            # 오늘 로그인 기록이 있는지 확인
-            already_logged_today = Streak.query.filter_by(username=user.username, date=today).first()
-
-            if not already_logged_today:
-                # 어제 로그인 기록이 있는지 확인
-                yesterday_log = Streak.query.filter_by(username=user.username, date=yesterday).first()
-
-                if yesterday_log:
-                    # 어제가 마지막이면 오늘도 추가 (연속 streak 유지)
-                    db.session.add(Streak(username=user.username, date=today))
-                else:
-                    # 연속 아님: 이전 기록 삭제하고 오늘부터 시작
-                    Streak.query.filter_by(username=user.username).delete()
-                    db.session.add(Streak(username=user.username, date=today))
-
+            # 오늘 로그인 기록이 없으면 추가 (중복 저장 방지)
+            if not Streak.query.filter_by(username=user.username, date=today).first():
+                db.session.add(Streak(username=user.username, date=today))
                 db.session.commit()
 
             return redirect(url_for('home'))
@@ -296,20 +283,35 @@ def streaks_page():
 @login_required
 def get_streaks(username):
     streaks = Streak.query.filter_by(username=username).order_by(Streak.date.desc()).all()
-    dates = [s.date for s in streaks]
-    today = date.today()
-    current_streak = 0
-    expected = today
+    all_dates = sorted([s.date for s in streaks], reverse=True)  # 최신 날짜 먼저
 
-    for d in dates:
-        if d == expected:
+    today = date.today()
+
+    # 🔥 전체 로그인 날짜는 항상 반환 (불꽃 표시용)
+    date_list = [d.isoformat() for d in all_dates]
+
+    # 오늘 로그인 안 했으면 streak은 0
+    if today not in all_dates:
+        return jsonify({
+            "dates": date_list,
+            "current_streak": 0
+        })
+
+    # streak 계산: 오늘부터 어제로 하루씩 줄이면서 연속 체크
+    current_streak = 1
+    check_day = today - timedelta(days=1)
+
+    for d in all_dates:
+        if d == check_day:
             current_streak += 1
-            expected -= timedelta(days=1)
+            check_day -= timedelta(days=1)
+        elif d > check_day:
+            continue  # 최신 날짜 생략 (이미 오늘 포함됨)
         else:
             break
 
     return jsonify({
-        "dates": [d.isoformat() for d in dates],
+        "dates": date_list,
         "current_streak": current_streak
     })
 
