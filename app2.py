@@ -90,10 +90,12 @@ def get_track_with_lyrics():
         'Maroon 5', 'Halsey', 'Selena Gomez', 'Post Malone', 'Lady Gaga',
         'Beyoncé', 'Rihanna', 'Sam Smith', 'Charlie Puth'
     ]
-    while True:
+    tries = 0
+    while tries < 10:  # avoid infinite loop
         artist = random.choice(pop_artists)
         tracks = search_itunes_tracks(artist)
         if not tracks:
+            tries += 1
             continue
         track = random.choice(tracks)
         lyrics = get_lyrics_ovh(track.get('artistName'), track.get('trackName'))
@@ -104,6 +106,8 @@ def get_track_with_lyrics():
                 'album_cover': track.get('artworkUrl100', '').replace('100x100bb', '300x300bb'),
                 'external_url': track.get('trackViewUrl')
             }, lyrics
+        tries += 1
+    return None, None
 
 # -------------------- NLP --------------------
 def get_definition(word):
@@ -311,13 +315,16 @@ def playlist():
     track_list = []
     seen_titles = set()
 
-    while len(track_list) < 20:  # 원하는 곡 수만큼 반복
+    while len(track_list) < 20:
         track, lyrics = get_track_with_lyrics()
+        if not track or not lyrics:
+            break  # fail gracefully
+
         if track['name'] in seen_titles:
             continue
         seen_titles.add(track['name'])
 
-        track['lyrics'] = lyrics  # 🎯 가사 추가!
+        track['lyrics'] = lyrics
         track_list.append(track)
 
     return render_template('music.html', tracks=track_list)
