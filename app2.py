@@ -10,6 +10,7 @@ import os
 import random
 import json
 import lyricsgenius
+import re
 
 try:
     import en_core_web_sm
@@ -83,16 +84,28 @@ def search_itunes_tracks(artist, limit=10):
     response = requests.get(url, params=params)
     return response.json().get('results', []) if response.status_code == 200 else []
 
-def get_lyrics_ovh(artist, title):
-    url = f"https://api.lyrics.ovh/v1/{artist}/{title}"
-    response = requests.get(url)
-    return response.json().get('lyrics') if response.status_code == 200 else None
-
 def get_lyrics_genius(artist, title):
     try:
         song = genius.search_song(title, artist)
         if song and song.lyrics:
-            return song.lyrics
+            lyrics = song.lyrics
+
+            # 1. "Lyrics\n" 이후부터 시작 (있으면)
+            if "Lyrics\n" in lyrics:
+                lyrics = lyrics.split("Lyrics\n", 1)[-1]
+
+            # 2. [Intro:], [Verse:], [Chorus:] 등 가사 파트 태그 찾기
+            match = re.search(r"(\[.*?\])", lyrics)
+            if match:
+                lyrics = lyrics[match.start():]
+
+            # 3. "You might also like", "Embed" 등 이후 내용 제거
+            for key in ["You might also like", "Embed"]:
+                if key in lyrics:
+                    lyrics = lyrics.split(key, 1)[0]
+
+            # 4. 앞뒤 공백 제거
+            return lyrics.strip()
     except Exception as e:
         print(f"Genius 가사 오류: {e}")
     return None
@@ -108,10 +121,11 @@ def get_track_with_lyrics():
     for _ in range(20):  # 최대 20번만 시도
         artist = random.choice(pop_artists)
         tracks = search_itunes_tracks(artist)
-        if not tracks:
-            tries += 1
+        # 아티스트명이 정확히 일치하는 곡만 필터링
+        filtered_tracks = [t for t in tracks if t.get('artistName', '').lower() == artist.lower()]
+        if not filtered_tracks:
             continue
-        track = random.choice(tracks)
+        track = random.choice(filtered_tracks)
         lyrics = get_lyrics_genius(track.get('artistName'), track.get('trackName'))
         if lyrics:
             return {
@@ -120,7 +134,6 @@ def get_track_with_lyrics():
                 'album_cover': track.get('artworkUrl100', '').replace('100x100bb', '300x300bb'),
                 'external_url': track.get('trackViewUrl')
             }, lyrics
-        tries += 1
     return None, None
 
 # -------------------- NLP --------------------
