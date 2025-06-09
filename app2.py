@@ -282,36 +282,27 @@ def streaks_page():
 @app.route('/api/streaks/<username>', methods=['GET'])
 @login_required
 def get_streaks(username):
+    # 날짜 기준으로 내림차순 정렬 (최근 기록부터)
     streaks = Streak.query.filter_by(username=username).order_by(Streak.date.desc()).all()
-    all_dates = sorted([s.date for s in streaks], reverse=True)  # 최신 날짜 먼저
+    dates = [s.date for s in streaks]
 
+    # 현재 연속 streak 계산
     today = date.today()
+    current_streak = 0
+    expected_day = today
 
-    # 🔥 전체 로그인 날짜는 항상 반환 (불꽃 표시용)
-    date_list = [d.isoformat() for d in all_dates]
-
-    # 오늘 로그인 안 했으면 streak은 0
-    if today not in all_dates:
-        return jsonify({
-            "dates": date_list,
-            "current_streak": 0
-        })
-
-    # streak 계산: 오늘부터 어제로 하루씩 줄이면서 연속 체크
-    current_streak = 1
-    check_day = today - timedelta(days=1)
-
-    for d in all_dates:
-        if d == check_day:
+    for d in dates:
+        if d == expected_day:
             current_streak += 1
-            check_day -= timedelta(days=1)
-        elif d > check_day:
-            continue  # 최신 날짜 생략 (이미 오늘 포함됨)
+            expected_day -= timedelta(days=1)
+        elif (expected_day - d).days == 1:
+            # 하루 차이로 연속이 끊김
+            break
         else:
             break
 
     return jsonify({
-        "dates": date_list,
+        "dates": [d.isoformat() for d in dates],
         "current_streak": current_streak
     })
 

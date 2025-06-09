@@ -101,8 +101,8 @@
               classNames: ['fire-streak']
             }));
 
-            // ✅ 방문한 날짜 수로 숫자 업데이트
-            document.getElementById("streak-count").textContent = `${data.dates.length}`;
+            // ✅ 현재 streak 수 출력
+            document.getElementById("streak-count").textContent = `${data.current_streak}`;
 
             successCallback(events);
           } catch (err) {
@@ -110,7 +110,6 @@
             failureCallback(err);
           }
         }
-
       });
 
       calendar.render();
