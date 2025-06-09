@@ -296,6 +296,40 @@ def get_streaks(username):
         "current_streak": current_streak
     })
 
+@app.route('/playlist')
+def playlist():
+    track_list = []
+    seen_titles = set()
+
+    while len(track_list) < 20:  # 원하는 곡 수만큼 반복
+        track, lyrics = get_track_with_lyrics()
+        if track['name'] in seen_titles:
+            continue
+        seen_titles.add(track['name'])
+
+        track['lyrics'] = lyrics  # 🎯 가사 추가!
+        track_list.append(track)
+
+    return render_template('music.html', tracks=track_list)
+
+@app.route('/api/refresh-tracks')
+def refresh_tracks():
+    tracks = []
+    for _ in range(5):
+        track, lyrics = get_track_with_lyrics()
+        track['lyrics'] = lyrics
+        tracks.append(track)
+    return jsonify(tracks)
+
+@app.route('/make-flashcard', methods=['POST'])
+def make_flashcard():
+    data = request.get_json()
+    words = data.get('words', [])
+    # 세션이나 다른 방법으로 단어들 넘기기
+    session['flashcard_words'] = words
+    return redirect(url_for('flashcard_page'))
+
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
