@@ -457,3 +457,7 @@
     cursor: pointer;
     transition: background-color 0.2s;
   }
+
+  .make-flashcard-btn:hover {
+    background-color: #a6a6a6;
+  }
