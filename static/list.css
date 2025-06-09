@@ -405,36 +405,27 @@ nav a {
   cursor: pointer;
 }
 
-.quiz-go-btn {
-  background-color: black;
-  color: white;
-  border: none;
-  padding: 15px 15px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: bold;
-  position: fixed;
-}
+.quiz-go-btn,
 .flashcard-go-btn {
-  background-color: black;
-  color: white;
+  width: 150px;       /* 버튼 고정 너비 */
+  height: 45px;       /* 버튼 고정 높이 */
+  font-size: 16px;    /* 글자 크기 */
   border: none;
-  padding: 15px 15px;
-  border-radius: 20px;
+  background-color: #faa21f;
+  color: black;
   cursor: pointer;
-  font-size: 15px;
+  border-radius: 20px;
+  transition: background-color 0.2s ease;
+  margin-top: 20px;
   font-weight: bold;
+
 }
 
+.quiz-go-btn:hover,
 .flashcard-go-btn:hover {
-  background-color: #FFA500;
-  color: black;
+  background-color: #c4c4c4;
 }
-.quiz-go-btn:hover {
-  background-color: #FFA500;
-  color: black;
-}
+
 
 .no-words {
   text-align: center;
@@ -451,5 +442,37 @@ nav a {
   margin: 0;
   font-size: 20px;
   line-height: 30px;
+  min-height: 300px; /* 원하는 높이로 조절 가능 */
+  transition: all 0.3s ease;
+
 }
+
+/* 리스트 버튼 전체 스타일 */
+.list-button {
+  width:200px;
+  height: 40px;
+  min-height: 40px;
+  box-sizing: border-box;
+  font-size: 16px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  border: none;
+  background-color: #faa21f;
+  cursor: pointer;
+  text-align: left; /* 텍스트 왼쪽 정렬 */
+  transition: background-color 0.2s ease;
+}
+
+/* 버튼 hover 효과 */
+.list-button:hover {
+  background-color: #4a4a4a;
+}
+
+/* 활성화된 버튼 스타일 */
+.list-button.active {
+  background-color: #1a1a1a;
+  color: white;
+  font-weight: bold;
+}
+
 

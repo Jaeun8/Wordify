@@ -301,11 +301,11 @@ def add_streak():
     else:
         return jsonify({"message": "Already exists"}), 200
 
-
 @app.route('/my-flashcard', methods=['GET', 'POST'])
 @login_required
 def my_flashcard():
     if request.method == 'POST':
+<<<<<<< HEAD
         words_json = request.form.get('words_data')
         quiz_words = json.loads(words_json) if words_json else []
     else:
@@ -314,6 +314,26 @@ def my_flashcard():
 
     message = request.args.get('message')  # 메시지 쿼리 파라미터 받아오기
     return render_template('flashcard.html', quiz_words=quiz_words, message=message)
+=======
+        words_json = request.form.get('words_json')
+        if words_json:
+            session['quiz_words'] = words_json  # JSON 문자열로 저장
+        return redirect(url_for('my_flashcard'))
+
+    else:
+        words_json = session.pop('quiz_words', None)
+        if words_json:
+            if isinstance(words_json, str):
+                quiz_words = json.loads(words_json)  # 문자열이면 파싱
+            else:
+                quiz_words = words_json  # 이미 리스트면 그냥 사용
+        else:
+            flashcards = Flashcard.query.filter_by(user_id=current_user.id).all()
+            quiz_words = [{"word": f.word, "meaning": f.meaning} for f in flashcards]
+
+        return render_template('list.html', word_list=quiz_words)
+
+>>>>>>> b84d8a8de55b6163d0853f3a46769d1f52e6f613
 
 
 
@@ -346,21 +366,42 @@ def select_song():
 
 
 
-@app.route('/flashcard/save', methods=['POST'])
+@app.route('/save_list', methods=['POST'])
 @login_required
-def save_flashcard():
-    data = request.json
-    word = data.get('word')
-    meaning = data.get('meaning')
+def save_list():
+    words_json = request.form.get('words_json')
+    if not words_json:
+        flash('저장할 단어가 없습니다.')
+        return redirect(url_for('my_flashcard'))  # 적절히 리다이렉트
+
+    try:
+        flashcards = json.loads(words_json)
+    except Exception as e:
+        flash('단어 데이터가 올바르지 않습니다.')
+        return redirect(url_for('my_flashcard'))
+
     user_id = current_user.id
+    saved_count = 0
 
-    if not word or not meaning:
-        return jsonify({"error": "Word and meaning are required"}), 400
+    for item in flashcards:
+        word = item.get('word')
+        meaning = item.get('meaning', '')
+        if not word:
+            continue
 
-    flashcard = Flashcard(user_id=user_id, word=word, meaning=meaning)
-    db.session.add(flashcard)
+        # 중복 저장 방지 (선택사항)
+        existing = Flashcard.query.filter_by(user_id=user_id, word=word).first()
+        if existing:
+            continue
+
+        new_flashcard = Flashcard(user_id=user_id, word=word, meaning=meaning)
+        db.session.add(new_flashcard)
+        saved_count += 1
+
     db.session.commit()
-    return jsonify({"message": "Flashcard saved"}), 200
+    flash(f'{saved_count}개의 단어가 저장되었습니다.')
+    return redirect(url_for('my_flashcard'))
+
 
 @app.route('/next-track')
 def next_track():
@@ -406,6 +447,7 @@ def word_list():
     return render_template('list.html', word_list=word_list_data)
 
 
+<<<<<<< HEAD
     
 
 @app.route('/save-list', methods=['POST'])
@@ -445,6 +487,8 @@ def save_list():
         print("Error saving words:", e)
         return redirect(url_for('my_flashcard', message='error'))
 
+=======
+>>>>>>> b84d8a8de55b6163d0853f3a46769d1f52e6f613
 @app.route('/delete_all', methods=['POST'])
 @login_required
 def delete_all_words():
@@ -459,7 +503,7 @@ def playlist():
     track_list = []
     seen_titles = set()
     
-    while len(track_list) < 5:  # 원하는 곡 수만큼 반복
+    while len(track_list) < 20:  # 원하는 곡 수만큼 반복
         track, lyrics = get_track_with_lyrics()
         if track['name'] in seen_titles:
             continue
@@ -469,6 +513,24 @@ def playlist():
         track_list.append(track)
 
     return render_template('music.html', tracks=track_list)
+
+@app.route('/api/refresh-tracks')
+def refresh_tracks():
+    tracks = []
+    for _ in range(5):
+        track, lyrics = get_track_with_lyrics()
+        track['lyrics'] = lyrics
+        tracks.append(track)
+    return jsonify(tracks)
+
+@app.route('/make-flashcard', methods=['POST'])
+def make_flashcard():
+    data = request.get_json()
+    words = data.get('words', [])
+    # 세션이나 다른 방법으로 단어들 넘기기
+    session['flashcard_words'] = words
+    return redirect(url_for('flashcard_page'))
+
 
 
 
