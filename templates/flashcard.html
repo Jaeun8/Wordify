@@ -78,15 +78,29 @@
       </nav>
     </header>
 
-    <div id="popup-msg"></div> <!-- ✅ 팝업 메시지 영역 -->
+    <div id="popup-msg"></div>
 
     <div class="container">
       <h1 class="title">낱말 카드</h1>
 
       <div id="card-area" class="card">
         <div class="card-content">
-          <p><strong id="word">{{ flashcards[0]['word'] if flashcards else '단어' }}</strong></p>
-          <p id="meaning">{{ flashcards[0]['meaning'] if flashcards else '뜻' }}</p>
+          <p>
+            <strong id="word">
+              {% if quiz_words and quiz_words[0]['word'] %}
+                {{ quiz_words[0]['word'] }}
+              {% else %}
+                단어
+              {% endif %}
+            </strong>
+          </p>
+          <p id="meaning">
+            {% if quiz_words and quiz_words[0]['meaning'] %}
+              {{ quiz_words[0]['meaning'] }}
+            {% else %}
+              뜻
+            {% endif %}
+          </p>
         </div>
       </div>
     </div>
@@ -114,7 +128,7 @@
     </div>
 
     <script>
-      const flashcards = {{ quiz_words | tojson | safe }};
+      const flashcards = {{ quiz_words | tojson | safe }} || [];
       let currentIndex = 0;
 
       function showCard(index) {

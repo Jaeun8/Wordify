@@ -176,10 +176,27 @@ def login():
         if user and check_password_hash(user.password, password):
             login_user(user, remember=True)
             today = date.today()
-            if not Streak.query.filter_by(username=user.username, date=today).first():
-                db.session.add(Streak(username=user.username, date=today))
+            yesterday = today - timedelta(days=1)
+
+            # 오늘 로그인 기록이 있는지 확인
+            already_logged_today = Streak.query.filter_by(username=user.username, date=today).first()
+
+            if not already_logged_today:
+                # 어제 로그인 기록이 있는지 확인
+                yesterday_log = Streak.query.filter_by(username=user.username, date=yesterday).first()
+
+                if yesterday_log:
+                    # 어제가 마지막이면 오늘도 추가 (연속 streak 유지)
+                    db.session.add(Streak(username=user.username, date=today))
+                else:
+                    # 연속 아님: 이전 기록 삭제하고 오늘부터 시작
+                    Streak.query.filter_by(username=user.username).delete()
+                    db.session.add(Streak(username=user.username, date=today))
+
                 db.session.commit()
+
             return redirect(url_for('home'))
+
         return render_template('Wordify_Login.html', error="아이디 또는 비밀번호가 잘못되었습니다.")
     return render_template('Wordify_Login.html')
 
