@@ -249,7 +249,7 @@ def my_flashcard():
 def save_to_word_list():
     words_json = request.form.get('words_json')
     if not words_json:
-        return redirect(url_for('my_flashcard', message='error'))
+        return redirect(url_for('list.html', message='error'))
 
     try:
         words = json.loads(words_json)
@@ -261,11 +261,11 @@ def save_to_word_list():
                      for w in words if w['word'] not in existing_set]
 
         if not new_words:
-            return redirect(url_for('my_flashcard', message='already_saved'))
+            return redirect(url_for('list', message='already_saved'))
 
         db.session.add_all(new_words)
         db.session.commit()
-        return redirect(url_for('my_flashcard', message='saved'))
+        return redirect(url_for('list', message='saved'))
 
     except Exception as e:
         db.session.rollback()
