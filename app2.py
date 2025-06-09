@@ -412,6 +412,7 @@ def word_list():
     
 
 @app.route('/save-list', methods=['POST'])
+@login_required
 def save_list():
     words_json = request.form.get('words_json')
     if not words_json:
@@ -419,19 +420,32 @@ def save_list():
 
     try:
         words = json.loads(words_json)
+        user_id = current_user.id
+
+        # 기존 단어들 불러오기
+        existing_words = Word.query.filter_by(user_id=user_id).with_entities(Word.word).all()
+        existing_word_set = set(w[0] for w in existing_words)
+
+        # 중복 없는 단어만 추가
+        new_words = []
         for item in words:
-            new_word = Word(
-                word=item.get('word'),
-                meaning=item.get('meaning'),
-                user_id=current_user.id if current_user.is_authenticated else None
-            )
-            db.session.add(new_word)
+            if item.get('word') not in existing_word_set:
+                new_words.append(Word(
+                    word=item.get('word'),
+                    meaning=item.get('meaning'),
+                    user_id=user_id
+                ))
+
+        if not new_words:
+            return 'Already exists', 200
+
+        db.session.add_all(new_words)
         db.session.commit()
+        return jsonify({"message": f"{len(new_words)} words saved"}), 200
+
     except Exception as e:
         db.session.rollback()
         return f"Error saving words: {e}", 500
-
-    return redirect(url_for('word_list'))
 
 @app.route('/delete_all', methods=['POST'])
 @login_required
