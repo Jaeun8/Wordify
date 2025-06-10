@@ -306,7 +306,7 @@ def word_list():
 
     word_objs = Word.query.filter_by(user_id=current_user.id).all()
     words = [{"word": w.word, "meaning": w.meaning} for w in word_objs]
-    return render_template('list.html', word_list=words)
+    return redirect(url_for('word_list', message='error')) 
 
 @app.route('/select')
 @login_required
