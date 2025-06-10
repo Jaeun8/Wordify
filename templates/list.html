@@ -94,71 +94,66 @@
 
 
 <script>
-    let words = [];
+  // 서버에서 전달된 단어 리스트를 JavaScript 배열로 받음
+  let words = {{ word_list | tojson | safe }};
 
-  try {
-    words = JSON.parse(`{{ word_list | tojson | safe }}`);
-  } catch (e) {
-    console.error("JSON 파싱 오류:", e);
-    words = [];
-  }
-const buttonsContainer = document.getElementById('list-buttons-container');
-const wordListDiv = document.getElementById('word-list');
-const wordsPerList = 10;
-let currentListIndex = 1; // 현재 보고있는 리스트 번호
+  // HTML 요소 참조
+  const buttonsContainer = document.getElementById('list-buttons-container');
+  const wordListDiv = document.getElementById('word-list');
+  const wordsPerList = 10;
+  let currentListIndex = 1;
 
-function showListWords(listIndex) {
-  currentListIndex = listIndex;
+  // 단어 리스트 표시 함수
+  function showListWords(listIndex) {
+    currentListIndex = listIndex;
 
-  const start = (listIndex - 1) * wordsPerList;
-  const end = start + wordsPerList;
-  const currentList = words.slice(start, end);
+    const start = (listIndex - 1) * wordsPerList;
+    const end = start + wordsPerList;
+    const currentList = words.slice(start, end);
 
-  // 단어 출력
-  wordListDiv.innerHTML = `<h2>List ${listIndex}</h2>`;
-  const ul = document.createElement('ul');
+    // 단어 출력
+    wordListDiv.innerHTML = `<h2>List ${listIndex}</h2>`;
+    const ul = document.createElement('ul');
 
-  currentList.forEach(item => {
-    const li = document.createElement('li');
-    li.innerHTML = `<strong>${item.word}</strong>: ${item.meaning}`;
-    ul.appendChild(li);
-  });
+    currentList.forEach(item => {
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${item.word}</strong>: ${item.meaning}`;
+      ul.appendChild(li);
+    });
 
-  wordListDiv.appendChild(ul);
+    wordListDiv.appendChild(ul);
 
-  // 버튼 active 상태 처리
-  const allButtons = document.querySelectorAll('.list-button');
-  allButtons.forEach(btn => btn.classList.remove('active'));
-  allButtons[listIndex - 1].classList.add('active');
+    // 버튼 active 스타일 업데이트
+    const allButtons = document.querySelectorAll('.list-button');
+    allButtons.forEach(btn => btn.classList.remove('active'));
+    allButtons[listIndex - 1].classList.add('active');
 
-  // hidden input에 현재 리스트 단어 JSON 저장
-  const hiddenInput = document.getElementById('words_data');
-  if(hiddenInput) {
-    hiddenInput.value = JSON.stringify(currentList);
-  }
-}
-
-// 버튼 생성 및 초기 표시
-if (words.length > 0) {
-  const numOfLists = Math.ceil(words.length / wordsPerList);
-
-  for (let i = 1; i <= numOfLists; i++) {
-    const btn = document.createElement('button');
-    btn.className = 'list-button';
-    btn.textContent = `List ${i}`;
-    btn.addEventListener('click', () => showListWords(i));
-    buttonsContainer.appendChild(btn);
+    // 현재 리스트 데이터를 hidden input 등에 저장하려면 여기서 가능
+    const hiddenInput = document.getElementById('words_data');
+    if (hiddenInput) {
+      hiddenInput.value = JSON.stringify(currentList);
+    }
   }
 
-  showListWords(1);
-} else {
-  buttonsContainer.innerHTML = '<p>저장된 리스트가 없습니다.</p>';
-  wordListDiv.innerHTML = '';
-}
+  // 버튼 생성 및 초기 리스트 표시
+  if (words.length > 0) {
+    const numOfLists = Math.ceil(words.length / wordsPerList);
 
-btn.className = 'list-button';
+    for (let i = 1; i <= numOfLists; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'list-button';
+      btn.textContent = `List ${i}`;
+      btn.addEventListener('click', () => showListWords(i));
+      buttonsContainer.appendChild(btn);
+    }
 
-
+    // 첫 번째 리스트 표시
+    showListWords(1);
+  } else {
+    // 단어 없을 경우 메시지 출력
+    buttonsContainer.innerHTML = '<p>저장된 리스트가 없습니다.</p>';
+    wordListDiv.innerHTML = '';
+  }
 </script>
 
 
