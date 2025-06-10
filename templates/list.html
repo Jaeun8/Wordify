@@ -8,156 +8,142 @@
 </head>
 <body>
 
-  <header>
-    <form action="{{ url_for('home') }}">
-      <button class="logo" type="submit">WORD<span>IFY</span></button>
-    </form>
-  
-    <nav>
-      <ul>
-        <li>
-          <form action="{{ url_for('streaks_page') }}">
-            <button class="nav-btn streaks">Streaks</button>
-          </form>
-        </li>
-        <li>
-          <form action="{{ url_for('playlist') }}">
-            <button class="nav-btn streaks">Playlist</button>
-          </form>
-        </li>
-        
-        <li>
-          <div class="dropdown">
-            <button class="dropbtn"> 
-              <span class="dropbtn_icon">menu</span>
-            </button>
-            <div class="dropdown-content">
-              <form action="{{ url_for('my_flashcard') }}">
-                <button class="flashcard flashcard-btn">flashcard</button>
+<header>
+  <form action="{{ url_for('home') }}">
+    <button class="logo" type="submit">WORD<span>IFY</span></button>
+  </form>
+
+  <nav>
+    <ul>
+      <li>
+        <form action="{{ url_for('streaks_page') }}">
+          <button class="nav-btn streaks">Streaks</button>
+        </form>
+      </li>
+      <li>
+        <form action="{{ url_for('playlist') }}">
+          <button class="nav-btn streaks">Playlist</button>
+        </form>
+      </li>
+      <li>
+        <div class="dropdown">
+          <button class="dropbtn"> 
+            <span class="dropbtn_icon">menu</span>
+          </button>
+          <div class="dropdown-content">
+            <form action="{{ url_for('my_flashcard') }}">
+              <button class="flashcard flashcard-btn">flashcard</button>
+            </form>
+            <form action="{{ url_for('quiz') }}">
+              <button class="quiz-btn quiz">quiz</button>
+            </form>
+            <form action="{{ url_for('word_list') }}">
+              <button class="list-btn">my lists</button>
+            </form>
+            <div>
+              {% if current_user is defined and current_user.is_authenticated %}
+              <form action="{{ url_for('logout') }}">
+                <button class="nav-btn">Logout</button>
               </form>
-              <form action="{{ url_for('quiz') }}">
-                <button class="quiz-btn quiz">quiz</button>
+              {% else %}
+              <form action="{{ url_for('login') }}">
+                <button class="nav-btn">Login/Signup</button>
               </form>
-              <form action="{{ url_for('word_list') }}">
-                <button class="list-btn">my lists</button>
-              </form>
-              <li>
-                {% if current_user is defined and current_user.is_authenticated %}
-                <form action="{{ url_for('logout') }}">
-                    <button class="nav-btn">Logout</button>
-                </form>
-                {% else %}
-                <form action="{{ url_for('login') }}">
-                  <button class="nav-btn">Login/Signup</button>
-                </form>
-                {% endif %}
-              </li>
+              {% endif %}
             </div>
           </div>
-        </li>
-      </ul>
-    </nav>
-  </header>
+        </div>
+      </li>
+    </ul>
+  </nav>
+</header>
 
 <h1> 나의단어장 </h1>
 
-
-  {% if word_list %}
-    <div class="delete-section">
-      <form method="POST" action="{{ url_for('delete_all_words') }}">
-        <button class="delete-btn" type="submit">리스트 전체 삭제</button>
-      </form>
-    </div>
-    <main style="display: flex; gap: 20px; padding: 20px;">
-
-    <div id="list-buttons-container" >
+{% if word_list %}
+  <div class="delete-section">
+    <form method="POST" action="{{ url_for('delete_all_words') }}">
+      <button class="delete-btn" type="submit">리스트 전체 삭제</button>
+    </form>
+  </div>
+  <main style="display: flex; gap: 20px; padding: 20px;">
+    <div id="list-buttons-container">
       <!-- JS가 버튼 동적으로 추가 -->
     </div>
-  
-    <!-- 오른쪽: 단어 리스트 표시 -->
-    <div id="word-list" >
+    <div id="word-list">
       <!-- 선택된 리스트 단어들 출력 -->
     </div>
+{% else %}
+  <p style="text-align:center;">저장된 단어가 없습니다.</p>
+  <main style="padding: 20px;">
+{% endif %}
 
+  <form action="{{ url_for('quiz') }}" style="display: inline-block; margin-right: 20px;">
+    <button type="submit" class="quiz-go-btn">퀴즈 보기</button>
+  </form>
 
-  {% else %}
-    <p style="text-align:center;">저장된 단어가 없습니다.</p>
-  {% endif %}
-    <form action="{{ url_for('quiz') }}" style="display: inline-block; margin-right: 20px;">
-      <button type="submit" class="quiz-go-btn">퀴즈 보기</button>
-    </form>
-    
-    <form action="{{ url_for('my_flashcard') }}" style="display: inline-block;">
-      <button id="flashcard-go-btn" class="flashcard-go-btn" style="display:inline-block;">Flashcard 가기</button>
-    </form>
+  <form action="{{ url_for('my_flashcard') }}" style="display: inline-block;">
+    <button id="flashcard-go-btn" class="flashcard-go-btn" style="display:inline-block;">Flashcard 가기</button>
+  </form>
+
 </main>
 
 
 <script>
-  // 서버에서 전달된 단어 리스트를 JavaScript 배열로 받음
-  let words = {{ word_list | tojson | safe }};
+  window.onload = function () {
+    let words = [];
 
-  // HTML 요소 참조
-  const buttonsContainer = document.getElementById('list-buttons-container');
-  const wordListDiv = document.getElementById('word-list');
-  const wordsPerList = 10;
-  let currentListIndex = 1;
-
-  // 단어 리스트 표시 함수
-  function showListWords(listIndex) {
-    currentListIndex = listIndex;
-
-    const start = (listIndex - 1) * wordsPerList;
-    const end = start + wordsPerList;
-    const currentList = words.slice(start, end);
-
-    // 단어 출력
-    wordListDiv.innerHTML = `<h2>List ${listIndex}</h2>`;
-    const ul = document.createElement('ul');
-
-    currentList.forEach(item => {
-      const li = document.createElement('li');
-      li.innerHTML = `<strong>${item.word}</strong>: ${item.meaning}`;
-      ul.appendChild(li);
-    });
-
-    wordListDiv.appendChild(ul);
-
-    // 버튼 active 스타일 업데이트
-    const allButtons = document.querySelectorAll('.list-button');
-    allButtons.forEach(btn => btn.classList.remove('active'));
-    allButtons[listIndex - 1].classList.add('active');
-
-    // 현재 리스트 데이터를 hidden input 등에 저장하려면 여기서 가능
-    const hiddenInput = document.getElementById('words_data');
-    if (hiddenInput) {
-      hiddenInput.value = JSON.stringify(currentList);
-    }
-  }
-
-  // 버튼 생성 및 초기 리스트 표시
-  if (words.length > 0) {
-    const numOfLists = Math.ceil(words.length / wordsPerList);
-
-    for (let i = 1; i <= numOfLists; i++) {
-      const btn = document.createElement('button');
-      btn.className = 'list-button';
-      btn.textContent = `List ${i}`;
-      btn.addEventListener('click', () => showListWords(i));
-      buttonsContainer.appendChild(btn);
+    try {
+      const raw = document.getElementById("word-data").textContent;
+      words = JSON.parse(raw);
+    } catch (e) {
+      console.error("word_list JSON parse error:", e);
+      words = [];
     }
 
-    // 첫 번째 리스트 표시
-    showListWords(1);
-  } else {
-    // 단어 없을 경우 메시지 출력
-    buttonsContainer.innerHTML = '<p>저장된 리스트가 없습니다.</p>';
-    wordListDiv.innerHTML = '';
-  }
+    const buttonsContainer = document.getElementById('list-buttons-container');
+    const wordListDiv = document.getElementById('word-list');
+    const wordsPerList = 10;
+    let currentListIndex = 1;
+
+    function showListWords(listIndex) {
+      currentListIndex = listIndex;
+      const start = (listIndex - 1) * wordsPerList;
+      const end = start + wordsPerList;
+      const currentList = words.slice(start, end);
+
+      wordListDiv.innerHTML = `<h2>List ${listIndex}</h2>`;
+      const ul = document.createElement('ul');
+      currentList.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${item.word}</strong>: ${item.meaning}`;
+        ul.appendChild(li);
+      });
+      wordListDiv.appendChild(ul);
+
+      const allButtons = document.querySelectorAll('.list-button');
+      allButtons.forEach(btn => btn.classList.remove('active'));
+      allButtons[listIndex - 1].classList.add('active');
+    }
+
+    if (words.length > 0) {
+      const numOfLists = Math.ceil(words.length / wordsPerList);
+      for (let i = 1; i <= numOfLists; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'list-button';
+        btn.textContent = `List ${i}`;
+        btn.addEventListener('click', () => showListWords(i));
+        buttonsContainer.appendChild(btn);
+      }
+      showListWords(1);
+    } else {
+      buttonsContainer.innerHTML = '<p>저장된 리스트가 없습니다.</p>';
+      wordListDiv.innerHTML = '';
+    }
+  };
 </script>
 
 
 
 </body>
 </html>
-  
