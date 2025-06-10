@@ -196,27 +196,53 @@ nav a {
   display: none;
   position: absolute;
   top: 100%;
-  left: 0;
+  right: 0;
+  left: auto;
   z-index: 1000;
   font-weight: 400;
   background-color: #1a1a1a;
-  min-width: 120px;
-  max-width: 450px; 
+  min-width: 180px;      /* 더 넓게 */
+  max-width: 260px;      /* 필요시 더 넓게 */
   border-radius: 10px;
   box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
   overflow-wrap: break-word;
+  padding: 0;            /* 패딩 제거 */
 }
 
-.dropdown-content a {
+.dropdown-content ul {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+}
+
+.dropdown-content li {
   display: block;
-  text-decoration: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.dropdown-content form {
+  width: 100%;
+  margin: 0;
+}
+
+.dropdown-content button {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  border-radius: 0;
+  border: none;
+  text-align: left;
+  padding: 12px 16px;
+  background: none;
   color: white;
   font-size: 14px;
-  padding: 12px 16px;
-  white-space: nowrap;
+  cursor: pointer;
 }
 
-.dropdown-content a:hover {
+.dropdown-content button:hover {
   background-color: #f8d28c;
   color: black;
   border-radius: 10px;
