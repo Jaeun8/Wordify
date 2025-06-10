@@ -304,8 +304,9 @@ def word_list():
         flash("로그인이 필요합니다.")
         return redirect(url_for('login'))
 
-    word_list = Word.query.filter_by(user_id=current_user.id).all()
-    return render_template('list.html', word_list=[{"word": w.word, "meaning": w.meaning} for w in word_list])
+    word_objs = Word.query.filter_by(user_id=current_user.id).all()
+    words = [{"word": w.word, "meaning": w.meaning} for w in word_objs]
+    return render_template('list.html', word_list=words)
 
 @app.route('/select')
 @login_required

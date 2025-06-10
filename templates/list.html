@@ -94,7 +94,14 @@
 
 
 <script>
-  const words = JSON.parse('{{ word_list | tojson | safe }}');
+    let words = [];
+
+  try {
+    words = JSON.parse(`{{ word_list | tojson | safe }}`);
+  } catch (e) {
+    console.error("JSON 파싱 오류:", e);
+    words = [];
+  }
 const buttonsContainer = document.getElementById('list-buttons-container');
 const wordListDiv = document.getElementById('word-list');
 const wordsPerList = 10;
