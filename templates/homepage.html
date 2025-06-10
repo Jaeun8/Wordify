@@ -30,26 +30,34 @@
               <span class="dropbtn_icon">menu</span>
             </button>
             <div class="dropdown-content">
-              <form action="{{ url_for('my_flashcard') }}">
-                <button class="flashcard flashcard-btn">flashcard</button>
-              </form>
-              <form action="{{ url_for('quiz') }}">
-                <button class="quiz-btn quiz">quiz</button>
-              </form>
-              <form action="{{ url_for('word_list') }}">
-                <button class="list-btn">my lists</button>
-              </form>
-              <li>
-                {% if current_user is defined and current_user.is_authenticated %}
-                <form action="{{ url_for('logout') }}">
+              <ul>
+                <li>
+                  <form action="{{ url_for('my_flashcard') }}">
+                    <button class="flashcard flashcard-btn">flashcard</button>
+                  </form>
+                </li>
+                <li>
+                  <form action="{{ url_for('quiz') }}">
+                    <button class="quiz-btn quiz">quiz</button>
+                  </form>
+                </li>
+                <li>
+                  <form action="{{ url_for('word_list') }}">
+                    <button class="list-btn">my lists</button>
+                  </form>
+                </li>
+                <li>
+                  {% if current_user is defined and current_user.is_authenticated %}
+                  <form action="{{ url_for('logout') }}">
                     <button class="nav-btn">Logout</button>
-                </form>
-                {% else %}
-                <form action="{{ url_for('login') }}">
-                  <button class="nav-btn">Login/Signup</button>
-                </form>
-                {% endif %}
-              </li>
+                  </form>
+                  {% else %}
+                  <form action="{{ url_for('login') }}">
+                    <button class="nav-btn">Login/Signup</button>
+                  </form>
+                  {% endif %}
+                </li>
+              </ul>
             </div>
           </div>
         </li>
