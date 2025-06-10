@@ -47,7 +47,7 @@
                   </form>
                 </li>
                 <li>
-                  {% if current_user is defined and current_user.is_authenticated %}
+                  {% if current_user.is_authenticated %}
                   <form action="{{ url_for('logout') }}">
                     <button class="nav-btn">Logout</button>
                   </form>
