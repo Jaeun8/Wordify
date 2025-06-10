@@ -77,6 +77,11 @@ class WordList(db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+@app.context_processor
+def inject_user():
+    from flask_login import current_user
+    return dict(current_user=current_user)
+
 # -------------------- 외부 API --------------------
 def search_itunes_tracks(artist, limit=10):
     url = "https://itunes.apple.com/search"
@@ -260,7 +265,7 @@ def my_flashcard():
 def save_to_word_list():
     words_json = request.form.get('words_json')
     if not words_json:
-        return redirect(url_for('list.html', message='error'))
+        return redirect(url_for('my_flashcard', message='error'))
 
     try:
         words = json.loads(words_json)
@@ -272,11 +277,11 @@ def save_to_word_list():
                      for w in words if w['word'] not in existing_set]
 
         if not new_words:
-            return redirect(url_for('list', message='already_saved'))
+            return redirect(url_for('my_flashcard', message='already_saved'))
 
         db.session.add_all(new_words)
         db.session.commit()
-        return redirect(url_for('list', message='saved'))
+        return redirect(url_for('my_flashcard', message='saved'))
 
     except Exception as e:
         db.session.rollback()
@@ -299,14 +304,14 @@ def quiz():
     return render_template('quiz.html', quiz_words=quiz_words)
 
 @app.route('/word_list')
+@login_required
 def word_list():
-    if not current_user.is_authenticated:
-        flash("로그인이 필요합니다.")
-        return redirect(url_for('login'))
+
 
     word_objs = Word.query.filter_by(user_id=current_user.id).all()
     words = [{"word": w.word, "meaning": w.meaning} for w in word_objs]
-    return redirect(url_for('word_list', message='error')) 
+    return render_template('list.html', words=words)
+
 
 @app.route('/select')
 @login_required
