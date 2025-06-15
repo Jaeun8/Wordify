@@ -1,165 +1,6 @@
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: 'Pretendard', sans-serif;
-  background-color:#f8d28c;
-  color: white;
-}
-
-/* Header */
-header {
-  background-color: #1a1a1a;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 32px;
-  position: relative;
-  top: 0;
-  width: 100%;
-  z-index: 1000;
-}
-
-.logo {
-  font-weight: bold;
-  text-decoration: none;
-  font-size: 34px;
-  color: white;
-  background-color: transparent;
-  border: none;
-}
-
-.logo span {
-  color:#FFA500;
-}
-
-nav ul {
-  display: flex;
-  gap: 24px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-nav a {
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.signup {
-  background-color: transparent;
-  border: 2px solid white;
-  padding: 8px 16px;
-  border-radius: 20px;
-}
-
-.signup:hover {
-  background-color: #c63c63;
-}
-
-.nav-btn {
-  padding: 10px 20px;
-  background-color: transparent;
-  border: 2px solid white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  color:white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-}
-
-.flashcard-btn {
-  padding: 10px 20px;
-  background-color: transparent;
-  border: 2px solid black;
-  padding: 8px 16px;
-  border-radius: 20px;
-  color:black;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-}
-
-.flashcard-btn:hover {
-  padding: 10px 20px;
-  background-color: #faa21f;
-  border: 2px solid black;
-  padding: 8px 16px;
-  border-radius: 20px;
-  color:black;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-}
-
-.quiz-btn {
-  padding: 10px 20px;
-  background-color: transparent;
-  border: 2px solid black;
-  padding: 8px 16px;
-  border-radius: 20px;
-  color:black;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-}
-
-.quiz-btn:hover {
-  padding: 10px 20px;
-  background-color: #faa21f;
-  border: 2px solid black;
-  padding: 8px 16px;
-  border-radius: 20px;
-  color:black;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-}
-
-.nav-btn:hover {
-  padding: 10px 20px;
-  background-color: #faa21f;
-  border: 2px solid black;
-  padding: 8px 16px;
-  border-radius: 20px;
-  color:black;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-}
-
+/* 기본 설정 */
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
-.dropdown{
-  position : relative;
-  display : inline-block;
-}
-
-.dropbtn_icon{
-  font-family : 'Material Icons';
-}
-.dropbtn
-{
-  padding: 10px 20px;
-  background-color: transparent;
-  border: 2px solid white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  color:white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
 * {
   box-sizing: border-box;
 }
@@ -167,106 +8,102 @@ nav a {
 body {
   margin: 0;
   font-family: 'Pretendard', sans-serif;
-  background-color:#f8d28c;
-  color: white;
-}
-
-/* Header */
-header {
-  background-color: #1a1a1a;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 32px;
-  position: relative;
-  top: 0;
-  width: 100%;
-  z-index: 1000;
-}
-
-.logo {
-  font-weight: bold;
-  text-decoration: none;
-  font-size: 34px;
-  color: white;
-  background-color: transparent;
-  border: none;
-}
-
-.logo span {
-  color:#FFA500;
-}
-
-nav ul {
-  display: flex;
-  gap: 24px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-nav a {
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.signup {
-  background-color: transparent;
-  border: 2px solid white;
-  padding: 8px 16px;
-  border-radius: 20px;
-}
-
-.signup:hover {
-  background-color: #c63c63;
-}
-
-.nav-btn {
-  padding: 10px 20px;
-  background-color: transparent;
-  border: 2px solid white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  color:white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-}
-
-.nav-btn:hover {
-  padding: 10px 20px;
   background-color: #f8d28c;
-  border: 2px solid black;
+  color: #222;
+}
+
+/* Header */
+header {
+  background-color: #1a1a1a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  width: 100%;
+  z-index: 1000;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 34px;
+  color: white;
+  background: transparent;
+  border: none;
+}
+
+.logo span {
+  color: #FFA500;
+}
+
+nav ul {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.signup {
+  background-color: transparent;
+  border: 2px solid white;
   padding: 8px 16px;
   border-radius: 20px;
-  color:black;
+}
+
+.signup:hover {
+  background-color: #c63c63;
+}
+
+.nav-btn, .flashcard-btn, .quiz-btn, .list-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s;
-
+  border: 2px solid black;
+  background: transparent;
 }
 
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+.nav-btn {
+  color: white;
+  border-color: white;
+}
+
+.nav-btn:hover {
+  background-color: #faa21f;
+  color: black;
+  border-color: black;
+}
+
+.flashcard-btn, .quiz-btn, .list-btn {
+  color: black;
+}
+
+.flashcard-btn:hover, .quiz-btn:hover, .list-btn:hover {
+  background-color: #faa21f;
+}
 
 .dropdown {
   position: relative;
   display: inline-block;
-  max-width: 100%; /* 부모 너비 넘지 않게 */
-  overflow: visible;
 }
 
-.dropbtn_icon{
-  font-family : 'Material Icons';
+.dropbtn_icon {
+  font-family: 'Material Icons';
 }
-.dropbtn{
-  padding: 10px 20px;
-  background-color: transparent;
-  border: 2px solid white;
+
+.dropbtn {
   padding: 8px 16px;
   border-radius: 20px;
-  color:white;
+  color: white;
+  background: transparent;
+  border: 2px solid white;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -276,28 +113,27 @@ nav a {
   display: none;
   position: absolute;
   top: 100%;
-  left: 0; /* 버튼 기준 왼쪽 정렬 */
+  left: 0;
   z-index: 1000;
-  font-weight: 400;
-  background-color: #1a1a1a; /* 검정 배경 */
+  background-color: #1a1a1a;
   min-width: 120px;
-  max-width: 450px; 
   border-radius: 10px;
   box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
-  overflow-wrap: break-word;
 }
 
-.dropdown-content a {
+.dropdown-content button {
   display: block;
-  text-decoration: none;
+  width: 100%;
+  background: none;
+  border: none;
   color: white;
   font-size: 14px;
   padding: 12px 16px;
-  white-space: nowrap;
+  text-align: left;
+  cursor: pointer;
 }
 
-
-.dropdown-content a:hover {
+.dropdown-content button:hover {
   background-color: #f8d28c;
   color: black;
   border-radius: 10px;
@@ -305,95 +141,20 @@ nav a {
 
 .dropdown:hover .dropdown-content {
   display: block;
-  padding: 10px 20px;
-  background-color: #f8d28c;
-  border: 2px solid black;
-  padding: 8px 16px;
-  width: 3px ;
-  border-radius: 20px;
-  color:black;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s;
 }
 
-.list-btn {
-  padding: 10px 20px;
-  background-color: transparent;
-  border: 2px solid black;
-  padding: 8px 16px;
-  border-radius: 20px;
-  color:black;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-}
-
-.list-btn:hover {
-  padding: 10px 20px;
-  background-color: #faa21f;
-  border: 2px solid black;
-  padding: 8px 16px;
-  border-radius: 20px;
-  color:black;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-}
- /*main */
-
- h1{
+/* 메인 타이틀 */
+h1 {
   text-align: center;
   margin-top: 50px;
   font-size: 50px;
   color: #333;
- }
-  
- .list-buttons-container {
-  display: grid;
-  gap: 20px;
-  padding: 20px;
-  max-width: 300px;
-  margin: 0 auto;
-  margin-left: 40px;
 }
 
-.list-button {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: none;
-  background-color: #000000;
-  cursor: pointer;
-  color: white;
-  font-weight: bold;
-  text-decoration: none;
-  text-align: center;
-  text-align: left;
-  font-size: 1em;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-}
-
-.list-button:hover {
-  background-color: #545353;
-}
-
-.list-button.active {
-  background-color: #FFA500;
-  color: black;
-  font-weight: bold;
-}
-
-
+/* 삭제 버튼 */
 .delete-section {
   text-align: center;
   margin-bottom: 15px;
-
-  
 }
 
 .delete-btn {
@@ -405,28 +166,116 @@ nav a {
   cursor: pointer;
 }
 
-.quiz-go-btn,
-.flashcard-go-btn {
-  width: 150px;       /* 버튼 고정 너비 */
-  height: 45px;       /* 버튼 고정 높이 */
-  font-size: 16px;    /* 글자 크기 */
-  border: none;
-  background-color: #faa21f;
-  color: black;
-  cursor: pointer;
-  border-radius: 20px;
-  transition: background-color 0.2s ease;
-  margin-top: 20px;
+/* 버튼 행 */
+.button-row {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 12px;
+}
+
+/* 단어 카드 컨테이너 */
+main {
+  width: 100vw;
+  max-width: 100vw;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  gap: 0;
+}
+
+.word-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.words-container {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* 단어 카드 */
+.word-card {
+  background: #e9ecef;
+  border-radius: 12px;
+  padding: 18px 32px;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  display: flex;
+  align-items: center;
+  color: #222;
+  margin: 0;
+}
+
+.word-card-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  gap: 32px;
+}
+
+.word-card-word {
+  font-size: 1.3em;
   font-weight: bold;
-
+  color:#FFA500;
+  min-width: 120px;
+  text-align: left;
 }
 
-.quiz-go-btn:hover,
-.flashcard-go-btn:hover {
-  background-color: #c4c4c4;
+.word-card-meaning {
+  font-size: 1.1em;
+  color: #333;
+  text-align: left;
+  flex: 1;
+  word-break: break-all;
 }
 
+/* 리스트 타이틀 */
+.list-title-row {
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  padding: 14px 32px;
+  margin: 18px 0 10px 0;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+}
 
+#list-title {
+  font-size: 1.3em;
+  font-weight: bold;
+  color: #FFA500;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+/* 단어 리스트 영역 */
+#word-list {
+  padding: 10px;
+  color: black;
+  border-radius: 10px;
+  margin: 0;
+  font-size: 20px;
+  line-height: 30px;
+  min-height: 300px;
+  transition: all 0.3s ease;
+}
+
+/* 저장된 단어 없을 때 */
 .no-words {
   text-align: center;
   font-size: 1.2em;
@@ -434,45 +283,39 @@ nav a {
   margin-top: 50px;
 }
 
-#word-list {
-  list-style: none;
-  padding: 10px;
-  color: black;
-  border-radius: 10px;  
-  margin: 0;
-  font-size: 20px;
-  line-height: 30px;
-  min-height: 300px; /* 원하는 높이로 조절 가능 */
-  transition: all 0.3s ease;
-
-}
-
-/* 리스트 버튼 전체 스타일 */
-.list-button {
-  width:200px;
-  height: 40px;
-  min-height: 40px;
-  box-sizing: border-box;
-  font-size: 16px;
-  padding: 8px 12px;
-  margin-bottom: 10px;
+.quiz-go-btn {
+  background-color: #FFA500;
+  color: #fff;
   border: none;
-  background-color: #faa21f;
-  cursor: pointer;
-  text-align: left; /* 텍스트 왼쪽 정렬 */
-  transition: background-color 0.2s ease;
-}
-
-/* 버튼 hover 효과 */
-.list-button:hover {
-  background-color: #4a4a4a;
-}
-
-/* 활성화된 버튼 스타일 */
-.list-button.active {
-  background-color: #1a1a1a;
-  color: white;
+  border-radius: 20px;
+  padding: 8px 20px;
   font-weight: bold;
+  font-size: 1em;
+  cursor: pointer;
+  margin-right: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.quiz-go-btn:hover {
+  background-color: #285a8c;
+  color: #fff;
+}
+
+.flashcard-go-btn {
+  background-color: #FFA500;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-weight: bold;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.flashcard-go-btn:hover {
+  background-color: #c97c0a;
+  color: #fff;
 }
 
 

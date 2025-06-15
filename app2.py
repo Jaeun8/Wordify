@@ -252,7 +252,10 @@ def my_flashcard():
 
     words_json = session.pop('quiz_words', None)
     if words_json:
-        quiz_words = json.loads(words_json)
+        if isinstance(words_json, str):
+            quiz_words = json.loads(words_json)
+        else:
+            quiz_words = words_json
     else:
         flashcards = Flashcard.query.filter_by(user_id=current_user.id).all()
         quiz_words = [{"word": f.word, "meaning": f.meaning} for f in flashcards]
@@ -270,10 +273,12 @@ def save_to_word_list():
     try:
         words = json.loads(words_json)
         user_id = current_user.id
-        existing = Word.query.filter_by(user_id=user_id).with_entities(Word.word).all()
+        # WordList 테이블에서 이미 저장된 단어 조회
+        existing = WordList.query.filter_by(user_id=user_id).with_entities(WordList.word).all()
         existing_set = set(w[0] for w in existing)
 
-        new_words = [Word(word=w['word'], meaning=w['meaning'], user_id=user_id)
+        # 새 단어만 저장
+        new_words = [WordList(word=w['word'], meaning=w['meaning'], user_id=user_id)
                      for w in words if w['word'] not in existing_set]
 
         if not new_words:
@@ -306,9 +311,7 @@ def quiz():
 @app.route('/word_list')
 @login_required
 def word_list():
-
-
-    word_objs = Word.query.filter_by(user_id=current_user.id).all()
+    word_objs = WordList.query.filter_by(user_id=current_user.id).all()
     words = [{"word": w.word, "meaning": w.meaning} for w in word_objs]
     return render_template('list.html', words=words)
 
