@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="../static/list.css" />
 </head>
 <body>
-
 <header>
   <form action="{{ url_for('home') }}">
     <button class="logo" type="submit">WORD<span>IFY</span></button>
@@ -58,36 +57,41 @@
   </nav>
 </header>
 
-<h1> 나의단어장 </h1>
+<h1> 나의 단어장 </h1>
 
-{% if word_list %}
+{% if words and words|length > 0%}
   <div class="delete-section">
     <form method="POST" action="{{ url_for('delete_all_words') }}">
       <button class="delete-btn" type="submit">리스트 전체 삭제</button>
     </form>
   </div>
-  <main style="display: flex; gap: 20px; padding: 20px;">
-    <div id="list-buttons-container">
-      <!-- JS가 버튼 동적으로 추가 -->
+  <main style="display: flex; gap: 0; padding: 0; width: 100vw; max-width: 100vw; margin: 0;">
+    <div style="width: 100%;">
+      <div class="button-row">
+        <form action="{{ url_for('quiz') }}" style="margin: 0 10px; display: inline-block;">
+          <button type="submit" class="quiz-go-btn">퀴즈 보기</button>
+        </form>
+        <form action="{{ url_for('my_flashcard') }}" style="display: inline-block;">
+          <button id="flashcard-go-btn" class="flashcard-go-btn">Flashcard 가기</button>
+        </form>
+      </div>
+      <div id="words-container" class="words-container">
+        <div class="list-title-row"><div id="list-title"></div></div>
+        <!-- 단어 카드들이 여기에 들어감 -->
+      </div>
     </div>
-    <div id="word-list">
-      <!-- 선택된 리스트 단어들 출력 -->
-    </div>
+  </main>
 {% else %}
   <p style="text-align:center;">저장된 단어가 없습니다.</p>
-  <main style="padding: 20px;">
 {% endif %}
 
-  <form action="{{ url_for('quiz') }}" style="display: inline-block; margin-right: 20px;">
-    <button type="submit" class="quiz-go-btn">퀴즈 보기</button>
-  </form>
-
-  <form action="{{ url_for('my_flashcard') }}" style="display: inline-block;">
-    <button id="flashcard-go-btn" class="flashcard-go-btn" style="display:inline-block;">Flashcard 가기</button>
-  </form>
 
 </main>
 
+
+<script id="word-data" type="application/json">
+  {{ words|tojson }}
+</script>
 
 <script>
   window.onload = function () {
@@ -100,45 +104,39 @@
       console.error("word_list JSON parse error:", e);
       words = [];
     }
+    const wordsContainer = document.getElementById('words-container');
 
-    const buttonsContainer = document.getElementById('list-buttons-container');
-    const wordListDiv = document.getElementById('word-list');
-    const wordsPerList = 10;
-    let currentListIndex = 1;
+    // 모든 단어를 한 번에 보여줍니다.
+    function showAllWords() {
+      document.getElementById('list-title').textContent = `내 단어 (${words.length}개)`;
+      // 기존 카드 영역 비우기
+      // list-title은 그대로 두고, 그 아래에 카드 컨테이너를 추가
+      // 기존 카드 컨테이너가 있으면 삭제
+      const oldCards = document.getElementById('cards-container');
+      if (oldCards) oldCards.remove();
 
-    function showListWords(listIndex) {
-      currentListIndex = listIndex;
-      const start = (listIndex - 1) * wordsPerList;
-      const end = start + wordsPerList;
-      const currentList = words.slice(start, end);
+      const cardsContainer = document.createElement('div');
+      cardsContainer.className = 'word-cards-container';
+      cardsContainer.id = 'cards-container';
 
-      wordListDiv.innerHTML = `<h2>List ${listIndex}</h2>`;
-      const ul = document.createElement('ul');
-      currentList.forEach(item => {
-        const li = document.createElement('li');
-        li.innerHTML = `<strong>${item.word}</strong>: ${item.meaning}`;
-        ul.appendChild(li);
+      words.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'word-card';
+        card.innerHTML = `
+          <div class="word-card-row">
+            <span class="word-card-word">${item.word}</span>
+            <span class="word-card-meaning">${item.meaning}</span>
+          </div>
+        `;
+        cardsContainer.appendChild(card);
       });
-      wordListDiv.appendChild(ul);
-
-      const allButtons = document.querySelectorAll('.list-button');
-      allButtons.forEach(btn => btn.classList.remove('active'));
-      allButtons[listIndex - 1].classList.add('active');
+      wordsContainer.appendChild(cardsContainer);
     }
 
     if (words.length > 0) {
-      const numOfLists = Math.ceil(words.length / wordsPerList);
-      for (let i = 1; i <= numOfLists; i++) {
-        const btn = document.createElement('button');
-        btn.className = 'list-button';
-        btn.textContent = `List ${i}`;
-        btn.addEventListener('click', () => showListWords(i));
-        buttonsContainer.appendChild(btn);
-      }
-      showListWords(1);
+      showAllWords();
     } else {
-      buttonsContainer.innerHTML = '<p>저장된 리스트가 없습니다.</p>';
-      wordListDiv.innerHTML = '';
+      wordsContainer.innerHTML = '';
     }
   };
 </script>
