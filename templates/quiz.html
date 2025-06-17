@@ -12,37 +12,44 @@
       <button class="logo" type="submit">WORD<span>IFY</span></button>
     </form>
   
-    <nav>
-      <ul>
-        <li>
-          <form action="{{ url_for('streaks_page') }}">
-            <button class="nav-btn streaks">Streaks</button>
-          </form>
-        </li>
-        <li>
-          <form action="{{ url_for('playlist') }}">
-            <button class="nav-btn streaks">Playlist</button>
-          </form>
-        </li>
-        <li>
-          <div class="dropdown">
-            <button class="dropbtn"> 
-              <span class="dropbtn_icon">menu</span>
-            </button>
-            <div class="dropdown-content">
-              <form action="{{ url_for('my_flashcard') }}">
-                <button class="flashcard flashcard-btn">flashcard</button>
-              </form>
-              <form action="{{ url_for('quiz') }}">
-                <button class="quiz-btn quiz">quiz</button>
-              </form>
-              <form action="{{ url_for('word_list') }}">
-                <button class="list-btn">my lists</button>
-              </form>
+  <nav>
+    <ul>
+      <li>
+        <form action="{{ url_for('streaks_page') }}">
+          <button class="nav-btn streaks">Streaks</button>
+        </form>
+      </li>
+      <li>
+        <form action="{{ url_for('playlist') }}">
+          <button class="nav-btn streaks">Playlist</button>
+        </form>
+      </li>
+      <li>
+        <div class="dropdown">
+          <button class="dropbtn"> 
+            <span class="dropbtn_icon">menu</span>
+          </button>
+          <div class="dropdown-content">
+            <ul>
               <li>
-                {% if current_user is defined and current_user.is_authenticated %}
+                <form action="{{ url_for('my_flashcard') }}">
+                  <button class="flashcard-btn">flashcard</button>
+                </form>
+              </li>
+              <li>
+                <form action="{{ url_for('quiz') }}">
+                  <button class="quiz-btn">quiz</button>
+                </form>
+              </li>
+              <li>
+                <form action="{{ url_for('word_list') }}">
+                  <button class="list-btn">my lists</button>
+                </form>
+              </li>
+              <li>
+                {% if current_user.is_authenticated %}
                 <form action="{{ url_for('logout') }}">
-                    <button class="nav-btn">Logout</button>
+                  <button class="nav-btn">Logout</button>
                 </form>
                 {% else %}
                 <form action="{{ url_for('login') }}">
@@ -50,11 +57,12 @@
                 </form>
                 {% endif %}
               </li>
-            </div>
+            </ul>
           </div>
-        </li>
-      </ul>
-    </nav>
+        </div>
+      </li>
+    </ul>
+  </nav>
   </header>
 
   <main>
