@@ -126,8 +126,9 @@
 
     <div class="button-group2">
       <div>
-        <form action="{{ url_for('quiz') }}">
-          <button class="quiz-go-btn">퀴즈보기</button>
+        <form id="quiz-form" method="post" action="{{ url_for('quiz') }}">
+          <input type="hidden" name="words_json" id="quiz_words_json">
+          <button class="quiz-go-btn" type="submit">퀴즈보기</button>
         </form>
       </div>
       <div>
@@ -200,6 +201,15 @@
         const jsonData = JSON.stringify(flashcards);
         hiddenInput.value = jsonData;
       });
+
+      const quizForm = document.getElementById('quiz-form');
+      const quizHiddenInput = document.getElementById('quiz_words_json');
+
+      quizForm.addEventListener('submit', function (e) {
+      const quizData = JSON.stringify(flashcards);
+      quizHiddenInput.value = quizData;
+});
+
     </script>
   </body>
 </html>

@@ -301,12 +301,21 @@ def delete_all_words():
     flash("전체 단어 리스트가 삭제되었습니다.")
     return redirect(url_for('word_list'))
 
-@app.route('/quiz')
+@app.route('/quiz', methods=['GET', 'POST'])
 def quiz():
-    all_words = session.get('quiz_words', [])
-    filtered = [w for w in all_words if w['meaning'] != "정의를 찾을 수 없음"]
-    quiz_words = filtered  # 최대 10개 또는 전체 단어 그대로 사용
-    return render_template('quiz.html', quiz_words=quiz_words)
+    if request.method == 'POST':
+        words_json = request.form.get('words_json')
+        if words_json:
+            try:
+                quiz_words = json.loads(words_json)
+            except:
+                quiz_words = []
+        else:
+            quiz_words = []
+        return render_template('quiz.html', quiz_words=quiz_words)
+    
+    # GET 요청 시 기본 처리
+    return render_template('quiz.html', quiz_words=[])
 
 @app.route('/word_list')
 @login_required
