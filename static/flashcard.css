@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -156,197 +158,233 @@ color:black;
 
 
 /*header*/
-
 header {
-background-color: #1a1a1a;
-display: flex;
-justify-content: space-between;
-align-items: center;
-padding: 16px 32px;
-position: relative;
-top: 0;
-width: 100%;
-z-index: 1000;
+  background-color: #1a1a1a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 2%;
+  position: relative;
+  top: 0;
+  width: 100%;
+  max-width: 100vw;
+  z-index: 1000;
+  box-sizing: border-box;
 }
 
 .logo {
-font-weight: bold;
-text-decoration: none;
-font-size: 34px;
-color: white;
-background-color: transparent;
-border: none;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 34px;
+  color: white;
+  background-color: transparent;
+  border: none;
 }
 
-
 .logo span {
-color:#FFA500;
+  color:#FFA500;
 }
 
 nav ul {
-display: flex;
-gap: 24px;
-list-style: none;
-margin: 0;
-padding: 0;
-}
-
-nav a {
-color: white;
-text-decoration: none;
-font-weight: bold;
-}
-
-.signup {
-background-color: transparent;
-border: 2px solid white;
-padding: 8px 16px;
-border-radius: 20px;
-}
-
-.signup:hover {
-background-color: #c63c63;
+  display: flex;
+  gap: 24px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center; 
 }
 
 .nav-btn {
-padding: 10px 20px;
-background-color: transparent;
-border: 2px solid white;
-padding: 8px 16px;
-border-radius: 20px;
-color:white;
-font-weight: bold;
-cursor: pointer;
-transition: background-color 0.3s;
-
-}
-.nav-btn:hover {
-padding: 10px 20px;
-background-color: #faa21f;
-border: 2px solid black;
-padding: 8px 16px;
-border-radius: 20px;
-color:black;
-font-weight: bold;
-cursor: pointer;
-transition: background-color 0.3s;
-
+  padding: 10px 20px;
+  background-color: transparent;
+  border: 2px solid white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
-
-.dropdown{
-position : relative;
-display : inline-block;
+.flashcard-btn {
+  padding: 10px 20px;
+  background-color: transparent;
+  border: 2px solid black;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-.dropbtn_icon{
-font-family : 'Material Icons';
-}
-
-.dropbtn{
-padding: 10px 20px;
-background-color: transparent;
-border: 2px solid white;
-padding: 8px 16px;
-border-radius: 20px;
-color:white;
-font-weight: bold;
-cursor: pointer;
-transition: background-color 0.3s;
-}
-
-.dropdown-content {
-display: none;
-position: absolute;
-top: 100%;
-left: 0; /* 버튼 기준 왼쪽 정렬 */
-z-index: 1000;
-font-weight: 400;
-background-color: #1a1a1a; /* 검정 배경 */
-min-width: 120px;
-max-width: 450px; 
-border-radius: 10px;
-box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
-overflow-wrap: break-word;
-}
-
-
-.dropdown-content a 
-{
-display: block;
-text-decoration: none;
-color: white;
-font-size: 14px;
-padding: 12px 16px;
-white-space: nowrap;
-}
-
-.dropdown-content a:hover {
-background-color: #f8d28c;
-color: black;
-border-radius: 10px;
-}
-
-.dropdown:hover .dropdown-content {
-display: block;
-padding: 10px 20px;
-background-color: #f8d28c;
-border: 2px solid black;
-padding: 8px 16px;
-width: 3px ;
-border-radius: 20px;
-color:black;
-font-weight: bold;
-cursor: pointer;
-transition: background-color 0.3s;
-}
-
-
-
-.flashcard-btn{
-display: inline-block; /* <a> 태그에도 버튼처럼 보이게 */
-padding: 8px 16px;
-background-color: transparent;
-border: 2px solid black;
-border-radius: 20px;
-color: black;
-font-weight: bold;
-font-size: 10px;  /* 통일된 폰트 크기 */
-cursor: pointer;
-text-decoration: none; /* 링크 밑줄 제거 */
-transition: background-color 0.3s;
-}
-
-
-.flashcard-btn:hover{
-background-color: #faa21f;
-border: 2px solid black;
-color: black;
+.flashcard-btn:hover {
+  padding: 10px 20px;
+  background-color: #faa21f;
+  border: 2px solid black;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .quiz-btn {
-padding: 10px 20px;
-background-color: transparent;
-border: 2px solid black;
-padding: 8px 16px;
-border-radius: 20px;
-color:black;
-font-weight: bold;
-cursor: pointer;
-transition: background-color 0.3s;
-
+  padding: 10px 20px;
+  background-color: transparent;
+  border: 2px solid black;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .quiz-btn:hover {
-padding: 10px 20px;
-background-color: #faa21f;
-border: 2px solid black;
-padding: 8px 16px;
-border-radius: 20px;
-color:black;
-font-weight: bold;
-cursor: pointer;
-transition: background-color 0.3s;
+  padding: 10px 20px;
+  background-color: #faa21f;
+  border: 2px solid black;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
 
+.list-btn {
+  padding: 10px 20px;
+  background-color: transparent;
+  border: 2px solid black;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.list-btn:hover {
+  padding: 10px 20px;
+  background-color: #faa21f;
+  border: 2px solid black;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.nav-btn:hover {
+  padding: 10px 20px;
+  background-color: #faa21f;
+  border: 2px solid black;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.dropbtn_icon{
+  font-family : 'Material Icons';
+}
+
+.dropbtn{
+  padding: 10px 20px;
+  background-color: transparent;
+  border: 2px solid white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  overflow: visible;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: auto;
+  z-index: 1000;
+  font-weight: 400;
+  background-color: #1a1a1a;
+  min-width: 180px;      /* 더 넓게 */
+  max-width: 260px;      /* 필요시 더 넓게 */
+  border-radius: 10px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  overflow-wrap: break-word;
+  padding: 0;            /* 패딩 제거 */
+}
+
+.dropdown-content ul {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+}
+
+.dropdown-content li {
+  display: block;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.dropdown-content form {
+  width: 100%;
+  margin: 0;
+}
+
+.dropdown-content button {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  border-radius: 0;
+  border: none;
+  text-align: left;
+  padding: 12px 16px;
+  background: none;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.dropdown-content button:hover {
+  background-color: #f8d28c;
+  color: black;
+  border-radius: 10px;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+  padding: 10px 20px;
+  background-color: #f8d28c;
+  border: 2px solid black;
+  padding: 8px 16px;
+  width: 3px ;
+  border-radius: 20px;
+  color:black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+@media (max-width: 768px) {
+  nav ul {
+    gap: 10px;
+  }
 }
