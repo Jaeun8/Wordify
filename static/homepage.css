@@ -51,23 +51,6 @@ nav ul {
   align-items: center; 
 }
 
-nav a {
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.signup {
-  background-color: transparent;
-  border: 2px solid white;
-  padding: 8px 16px;
-  border-radius: 20px;
-}
-
-.signup:hover {
-  background-color: #c63c63;
-}
-
 .nav-btn {
   padding: 10px 20px;
   background-color: transparent;
@@ -162,11 +145,6 @@ nav a {
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s;
-}
-
-.dropdown{
-  position : relative;
-  display : inline-block;
 }
 
 .dropbtn_icon{
