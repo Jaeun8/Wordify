@@ -1,433 +1,463 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Pretendard', sans-serif;
+  background-color:#f8d28c;
+  color: white;
+}
+
+/* Header */
+header {
+  background-color: #1a1a1a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  position: relative;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.logo {
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 34px;
+  color: white;
+  background-color: transparent;
+  border: none;
+}
+
+.logo span {
+  color:#FFA500;
+}
+
+nav ul {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.signup {
+  background-color: transparent;
+  border: 2px solid white;
+  padding: 8px 16px;
+  border-radius: 20px;
+}
+
+.signup:hover {
+  background-color: #c63c63;
+}
+
+.nav-btn {
+  padding: 10px 20px;
+  background-color: transparent;
+  border: 2px solid white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+}
+
+.flashcard-btn {
+  padding: 10px 20px;
+  background-color: transparent;
+  border: 2px solid black;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+}
+
+.flashcard-btn:hover {
+  padding: 10px 20px;
+  background-color: #faa21f;
+  border: 2px solid black;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+}
+
+.quiz-btn {
+  padding: 10px 20px;
+  background-color: transparent;
+  border: 2px solid black;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+}
+
+.quiz-btn:hover {
+  padding: 10px 20px;
+  background-color: #faa21f;
+  border: 2px solid black;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+}
+
+.list-btn {
+  padding: 10px 20px;
+  background-color: transparent;
+  border: 2px solid black;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+}
+
+.list-btn:hover {
+  padding: 10px 20px;
+  background-color: #faa21f;
+  border: 2px solid black;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+}
+
+.nav-btn:hover {
+  padding: 10px 20px;
+  background-color: #faa21f;
+  border: 2px solid black;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+}
+
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
+.dropdown{
+  position : relative;
+  display : inline-block;
+}
+
+.dropbtn_icon{
+  font-family : 'Material Icons';
+}
+.dropbtn
+{
+  padding: 10px 20px;
+  background-color: transparent;
+  border: 2px solid white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
 * {
-    box-sizing: border-box;
-  }
-  
-  body {
-    margin: 0;
-    font-family: 'Pretendard', sans-serif;
-    background-color:#f8d28c;
-    color: white;
-  }
-  
-  /* Header */
-  header {
-    background-color: #1a1a1a;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 32px;
-    position: relative;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
-  }
-  
-  .logo {
-    font-weight: bold;
-    text-decoration: none;
-    font-size: 34px;
-    color: white;
-    background-color: transparent;
-    border: none;
-  }
-  
-  .logo span {
-    color:#FFA500;
-  }
-  
-  nav ul {
-    display: flex;
-    gap: 24px;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  
-  nav a {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-  }
-  
-  .signup {
-    background-color: transparent;
-    border: 2px solid white;
-    padding: 8px 16px;
-    border-radius: 20px;
-  }
-  
-  .signup:hover {
-    background-color: #c63c63;
-  }
-  
-  .nav-btn {
-    padding: 10px 20px;
-    background-color: transparent;
-    border: 2px solid white;
-    padding: 8px 16px;
-    border-radius: 20px;
-    color:white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  
-  }
-  
-  .flashcard-btn {
-    padding: 10px 20px;
-    background-color: transparent;
-    border: 2px solid black;
-    padding: 8px 16px;
-    border-radius: 20px;
-    color:black;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  
-  }
-  
-  .flashcard-btn:hover {
-    padding: 10px 20px;
-    background-color: #faa21f;
-    border: 2px solid black;
-    padding: 8px 16px;
-    border-radius: 20px;
-    color:black;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  
-  }
-  
-  .quiz-btn {
-    padding: 10px 20px;
-    background-color: transparent;
-    border: 2px solid black;
-    padding: 8px 16px;
-    border-radius: 20px;
-    color:black;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  
-  }
-  
-  .quiz-btn:hover {
-    padding: 10px 20px;
-    background-color: #faa21f;
-    border: 2px solid black;
-    padding: 8px 16px;
-    border-radius: 20px;
-    color:black;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  
-  }
-  
-  .list-btn {
-    padding: 10px 20px;
-    background-color: transparent;
-    border: 2px solid black;
-    padding: 8px 16px;
-    border-radius: 20px;
-    color:black;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  
-  }
-  
-  .list-btn:hover {
-    padding: 10px 20px;
-    background-color: #faa21f;
-    border: 2px solid black;
-    padding: 8px 16px;
-    border-radius: 20px;
-    color:black;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  
-  }
-  
-  .nav-btn:hover {
-    padding: 10px 20px;
-    background-color: #faa21f;
-    border: 2px solid black;
-    padding: 8px 16px;
-    border-radius: 20px;
-    color:black;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  
-  }
-  
-  .logo {
-    font-weight: bold;
-    text-decoration: none;
-    font-size: 34px;
-    color: white;
-    background-color: transparent;
-    border: none;
-  }
-  
-  .logo span {
-    color:#FFA500;
-  }
-  
-  nav ul {
-    display: flex;
-    gap: 24px;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  
-  nav a {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-  }
-  
-  .signup {
-    background-color: transparent;
-    border: 2px solid white;
-    padding: 8px 16px;
-    border-radius: 20px;
-  }
-  
-  .signup:hover {
-    background-color: #c63c63;
-  }
-  
-  .nav-btn {
-    padding: 10px 20px;
-    background-color: transparent;
-    border: 2px solid white;
-    padding: 8px 16px;
-    border-radius: 20px;
-    color:white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  
-  }
-  
-  .nav-btn:hover {
-    padding: 10px 20px;
-    background-color: #f8d28c;
-    border: 2px solid black;
-    padding: 8px 16px;
-    border-radius: 20px;
-    color:black;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  
-  }
-  
-  .dropdown {
-    position: relative;
-    display: inline-block;
-    max-width: 100%; /* 부모 너비 넘지 않게 */
-    overflow: visible;
-  }
-  
-  .dropbtn_icon{
-    font-family : 'Material Icons';
-  }
-  .dropbtn{
-    padding: 10px 20px;
-    background-color: transparent;
-    border: 2px solid white;
-    padding: 8px 16px;
-    border-radius: 20px;
-    color:white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0; /* 버튼 기준 왼쪽 정렬 */
-    z-index: 1000;
-    font-weight: 400;
-    background-color: #1a1a1a; /* 검정 배경 */
-    min-width: 120px;
-    max-width: 450px; 
-    border-radius: 10px;
-    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
-    overflow-wrap: break-word;
-  }
-  
-  .dropdown-content a {
-    display: block;
-    text-decoration: none;
-    color: white;
-    font-size: 14px;
-    padding: 12px 16px;
-    white-space: nowrap;
-  }
+  box-sizing: border-box;
+}
 
-  .dropdown-content a:hover {
-    background-color: #f8d28c;
-    color: black;
-    border-radius: 10px;
-  }
-  
-  .dropdown:hover .dropdown-content {
-    display: block;
-    padding: 10px 20px;
-    background-color: #f8d28c;
-    border: 2px solid black;
-    padding: 8px 16px;
-    width: 3px ;
-    border-radius: 20px;
-    color:black;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  /* Main Content */
-  .playlist {
-    padding: 30px;
-    background-color: #f8d28c;
-  }
-  
-  .music-list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .music-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #000000;
-    padding-bottom: 15px;
-  }
-  
-  .album-cover {
-    width: 80px;
-    height: 80px;
-    margin-right: 20px;
-    border-radius: 10px;
-  }
-  
-  .music-info h3 {
-    margin: 0;
-    font-size: 20px;
-  }
-  
-  .music-info p {
-    margin: 5px 0;
-    color: #666;
-  }
-  
+body {
+  margin: 0;
+  font-family: 'Pretendard', sans-serif;
+  background-color:#f8d28c;
+  color: white;
+}
 
-  .lyrics-box {
-    margin-top: 10px;
-    background-color: #e9e9e9;
-    padding: 15px;
-    border-radius: 8px;
-    width: 100vw;
-    max-width: 1000px;
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%);
-    box-sizing: border-box;
-  }
-  
-  .lyrics-box summary {
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 16px;
-    color: #444;
-  }
-  
-  .lyrics-box pre {
-    white-space: pre-wrap;
-    margin-top: 10px;
-    font-size: 15px;
-    color: #333;
-    line-height: 1.6;
-  
-    /* ✨ 스크롤 가능하도록 설정 */
-    max-height: 300px;        /* 원하는 높이로 조절 가능 */
-    overflow-y: auto;
-    padding-right: 10px;
-  }
-  
+/* Header */
+header {
+  background-color: #1a1a1a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  position: relative;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
 
-  pre{
-    white-space: pre-line;
-    margin-top: 10px;
-    font-size: 15px;
-    color: #ffffff;
-    line-height: 1.6;
-  }
-  
+.logo {
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 34px;
+  color: white;
+  background-color: transparent;
+  border: none;
+}
 
-  h2{
-    font-size: 24px;
-    margin-bottom: 20px;
-    color: #000000;
-  }
-  h3{
-    color: #333;
-  }
+.logo span {
+  color:#FFA500;
+}
 
-  .refresh-btn {
-    background-color: #faa21f;
-    color: white;
-    font-size: 16px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-  
-  .refresh-btn:hover {
-    background-color: #525252;
-  }
-  
-  .select-song-btn{
-    background-color: #faa21f;
-    color: white;
-    font-size: 16px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
+nav ul {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 
-  .select-song-btn:hover {
-    background-color: #a6a6a6;
-  }
+nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
 
-  #load-more-btn {
-    background-color: #faa21f;
-    color: white;
-    font-size: 16px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    margin: 20px auto;
-    display: block;
-    transition: background-color 0.2s;
-  }
+.signup {
+  background-color: transparent;
+  border: 2px solid white;
+  padding: 8px 16px;
+  border-radius: 20px;
+}
 
-  #load-more-btn:hover {
-    background-color: #525252;
-  }
+.signup:hover {
+  background-color: #c63c63;
+}
+
+.nav-btn {
+  padding: 10px 20px;
+  background-color: transparent;
+  border: 2px solid white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+}
+
+.nav-btn:hover {
+  padding: 10px 20px;
+  background-color: #f8d28c;
+  border: 2px solid black;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+}
+
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  max-width: 100%; /* 부모 너비 넘지 않게 */
+  overflow: visible;
+}
+
+.dropbtn_icon{
+  font-family : 'Material Icons';
+}
+.dropbtn{
+  padding: 10px 20px;
+  background-color: transparent;
+  border: 2px solid white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color:white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0; /* 버튼 기준 왼쪽 정렬 */
+  z-index: 1000;
+  font-weight: 400;
+  background-color: #1a1a1a; /* 검정 배경 */
+  min-width: 120px;
+  max-width: 450px; 
+  border-radius: 10px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  overflow-wrap: break-word;
+}
+
+.dropdown-content a {
+  display: block;
+  text-decoration: none;
+  color: white;
+  font-size: 14px;
+  padding: 12px 16px;
+  white-space: nowrap;
+}
+
+
+.dropdown-content a:hover {
+  background-color: #f8d28c;
+  color: black;
+  border-radius: 10px;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+  padding: 10px 20px;
+  background-color: #f8d28c;
+  border: 2px solid black;
+  padding: 8px 16px;
+  width: 3px ;
+  border-radius: 20px;
+  color:black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* Main Content */
+.playlist {
+  padding: 30px;
+  background-color: #f8d28c;
+}
+
+.music-list {
+  list-style: none;
+  padding: 0;
+}
+
+.music-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #000000;
+  padding-bottom: 15px;
+}
+
+.album-cover {
+  width: 80px;
+  height: 80px;
+  margin-right: 20px;
+  border-radius: 10px;
+}
+
+.music-info h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.music-info p {
+  margin: 5px 0;
+  color: #666;
+}
+
+
+.lyrics-box {
+  margin-top: 10px;
+  background-color: #e9e9e9;
+  padding: 15px;
+  border-radius: 8px;
+  width: 100vw;
+  max-width: 1000px;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  box-sizing: border-box;
+}
+
+.lyrics-box summary {
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  color: #444;
+}
+
+.lyrics-box pre {
+  white-space: pre-wrap;
+  margin-top: 10px;
+  font-size: 15px;
+  color: #333;
+  line-height: 1.6;
+
+  /* ✨ 스크롤 가능하도록 설정 */
+  max-height: 300px;        /* 원하는 높이로 조절 가능 */
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+
+pre{
+  white-space: pre-line;
+  margin-top: 10px;
+  font-size: 15px;
+  color: #ffffff;
+  line-height: 1.6;
+}
+
+
+h2{
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #000000;
+}
+h3{
+  color: #333;
+}
+
+.refresh-btn {
+  background-color: #faa21f;
+  color: white;
+  font-size: 16px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.refresh-btn:hover {
+  background-color: #525252;
+}
+
+.select-song-btn{
+  background-color: #faa21f;
+  color: white;
+  font-size: 16px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.select-song-btn:hover {
+  background-color: #a6a6a6;
+}

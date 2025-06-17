@@ -67,7 +67,7 @@
   </nav>
 </header>
 
-<main>
+<!-- <main>
     <section class="playlist">
         <h2>🎵 오늘의 추천 노래</h2>
         <div style="text-align: center; margin-top: 20px;">
@@ -89,6 +89,38 @@
       </section>
       
       
+</main> -->
+
+<main>
+  <section class="playlist">
+      <h2>🎵 오늘의 추천 노래</h2>
+      <div style="text-align: center; margin-top: 20px;">
+          <button id="refresh-btn" class="refresh-btn">다시 추천받기</button>
+        </div>
+        
+      <ul class="music-list">
+        {% for track in tracks %}
+        <li class="music-item">
+          <img src="{{ track.album_cover }}" alt="앨범 커버" class="album-cover">
+          <div class="music-info">
+            <h3>{{ track.name }}</h3>
+            <p>{{ track.artist }}</p>  
+            <form action="{{ url_for('word_list') }}" >
+          </form>
+            <button id="generate-flashcard-btn" class="select-song-btn" data-lyrics="{{ track.lyrics | e }}">Flashcard 만들기</button>    
+            <details class="lyrics-box">
+              <summary>🎤 가사 보기</summary>
+              <pre>{{ track.lyrics }}</pre>
+
+            </details>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    
+    
+</main>
 </main>
 
 
@@ -147,6 +179,25 @@
           });
       });
     });
+    document.getElementById('generate-flashcard-btn').addEventListener('click', function() {
+    const lyrics = this.getAttribute('data-lyrics');
+
+    fetch('/generate-flashcard', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ lyrics: lyrics })
+    })
+    .then(res => {
+        if (res.redirected) {
+            window.location.href = res.url;
+        } else {
+            return res.json();
+        }
+    })
+    .catch(err => console.error("Error:", err));
+});
     </script>    
 </body>
 </html>

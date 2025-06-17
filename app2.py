@@ -396,6 +396,28 @@ def make_flashcard():
     session['flashcard_words'] = words
     return redirect(url_for('flashcard_page'))
 
+@app.route('/generate-flashcard', methods=['POST'])
+@login_required
+def generate_flashcard():
+    try:
+        data = request.get_json()
+        lyrics = data.get('lyrics', '')
+        if not lyrics:
+            return jsonify({'error': '가사가 없습니다.'}), 400
+
+        flashcards = get_words_meanings(lyrics, count=30)
+        filtered = [f for f in flashcards if f['meaning'] != "정의를 찾을 수 없음"]
+        selected = filtered[:10] if len(filtered) >= 10 else filtered
+
+        session['quiz_words'] = selected
+        return redirect(url_for('my_flashcard'))
+
+    except Exception as e:
+        print("[Flashcard 생성 실패]", e)
+        traceback.print_exc()
+        return jsonify({'error': '서버 오류'}), 500
+
+
 
 if __name__ == "__main__":
     # Render.com은 환경변수 PORT를 제공
