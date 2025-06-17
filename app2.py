@@ -45,7 +45,12 @@ genius = lyricsgenius.Genius(
     skip_non_songs=True,
     excluded_terms=["(Remix)", "(Live)"]
 )
-genius._session.headers.update({'User-Agent': 'Mozilla/5.0'})
+genius._session.headers.update({
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Connection': 'keep-alive'
+})
 
 # -------------------- 모델 정의 --------------------
 class User(UserMixin, db.Model):
