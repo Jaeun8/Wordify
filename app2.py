@@ -365,7 +365,7 @@ def playlist():
     track_list = []
     seen_titles = set()
 
-    while len(track_list) < 20:
+    while len(track_list) < 5:
         track, lyrics = get_track_with_lyrics()
         if not track or not lyrics:
             break  # fail gracefully
