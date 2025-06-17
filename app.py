@@ -38,8 +38,19 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 # Genius API 설정
-GENIUS_API_TOKEN = "FMzgu1G_uCPG0e9OqdUgsPBlBM7uJHZctK40proPeNoW4t7KhD4Ivg8jbZ5g3bXV"
-genius = lyricsgenius.Genius(GENIUS_API_TOKEN, timeout=5, skip_non_songs=True, excluded_terms=["(Remix)", "(Live)"])
+GENIUS_API_TOKEN = "apmP3o5fiXCL9zgl2mw_LVd8KJX-WB8aor8IEy426wnhIH9fCm3uak2W03xo6Y0T"
+genius = lyricsgenius.Genius(
+    GENIUS_API_TOKEN,
+    timeout=5,
+    skip_non_songs=True,
+    excluded_terms=["(Remix)", "(Live)"]
+)
+genius._session.headers.update({
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Connection': 'keep-alive'
+})
 
 # -------------------- 모델 정의 --------------------
 class User(UserMixin, db.Model):
