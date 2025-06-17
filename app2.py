@@ -38,7 +38,7 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 # Genius API 설정
-GENIUS_API_TOKEN = "YOUR_NEW_TOKEN"
+GENIUS_API_TOKEN = "apmP3o5fiXCL9zgl2mw_LVd8KJX-WB8aor8IEy426wnhIH9fCm3uak2W03xo6Y0T"
 genius = lyricsgenius.Genius(
     GENIUS_API_TOKEN,
     timeout=5,
