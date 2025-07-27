@@ -9,7 +9,7 @@ import spacy
 import os
 import random
 import json
-import lyricsgenius
+# import lyricsgenius
 import re
 
 try:
